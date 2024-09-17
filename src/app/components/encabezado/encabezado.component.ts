@@ -10,10 +10,10 @@ export class EncabezadoComponent  implements OnInit {
   @Input()
   titulo: string = "";
 
-  constructor() { 
+  constructor() { }
+  
+  ngOnInit() {
     this.titulo = this.titulo.slice(0, 1).toUpperCase() + this.titulo.slice(1);
   }
-
-  ngOnInit() {}
 
 }
