@@ -1,3 +1,12 @@
-.color-duoc {
-    color: var(--ion-color-primary);
+
+svg.color-primario  {
+    fill: var(--ion-color-primary);
+}
+
+svg.color-secundario  {
+    fill: var(--ion-color-secondary);
+}
+
+svg.color-terciario  {
+    fill: var(--ion-color-tertiary);
 }
