@@ -1,0 +1,42 @@
+<app-encabezado titulo="Login"></app-encabezado>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Loguearse xd</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form (ngSubmit)="iniciarSesion()">
+        <ion-input
+        class="ion-margin-bottom"
+        fill="outline"
+        type="email"
+        label="Correo"
+        placeholder="Ingrese su correo"
+        helperText="Ingrese su correo institucional"
+        labelPlacement="stacked"
+        errorText="Pone el correo bien, persona de bajo intelecto"
+        [(ngModel)]="email"
+        name="email"
+        required
+      ></ion-input>
+      <ion-input
+        class="ion-margin-bottom"
+        fill="outline"
+        type="password"
+        placeholder="Ingrese una contraseña"
+        label="Contraseña"
+        labelPlacement="stacked"
+        [(ngModel)]="password"
+        name="password"
+        required
+      >
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        
+      </ion-input>
+        <ion-button expand="full" type="submit">iniciar Sesion </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
