@@ -1,5 +1,33 @@
+<app-encabezado titulo="perfil"></app-encabezado>
+
 <ion-content class="ion-padding">
-  <ion-text>
-    <h2>Este es el perfil</h2>
-  </ion-text>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Loguearse xd</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-input
+        class="ion-margin-bottom"
+        fill="outline"
+        type="email"
+        label="Correo"
+        placeholder="Ingrese su correo"
+        helperText="Ingrese su correo institucional"
+        labelPlacement="stacked"
+        errorText="Pone el correo bien persona de bajo intelecto"
+        ngModel
+        email
+      ></ion-input>
+      <ion-input
+        class="ion-margin-bottom"
+        fill="outline"
+        type="password"
+        placeholder="Ingrese una contraseña"
+        label="Contraseña"
+        labelPlacement="stacked"
+      >
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
