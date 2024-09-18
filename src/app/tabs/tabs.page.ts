@@ -13,13 +13,13 @@ export class TabsPage implements OnInit {
       title: 'Home',
       url: '/tabs/home',
       icon: 'home',
-      color: 'primary'
+      color: 'tertiary'
     },
     {
       title: 'Perfil',
       url: '/tabs/perfil',
       icon: 'person-circle',
-      color: 'primary'
+      color: 'tertiary'
     }
   ];
 
