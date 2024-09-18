@@ -9,7 +9,6 @@ export class LoginPage implements OnInit {
   
   email: string = '';
   password: string = '';
-  
 
   constructor(private navCtrl: NavController ) { }
 
@@ -18,5 +17,6 @@ export class LoginPage implements OnInit {
   iniciarSesion() {
     // para mandarlos al home
     this.navCtrl.navigateRoot('/tabs/home');
+    console.log(this.email, this.password);
   }
 }
