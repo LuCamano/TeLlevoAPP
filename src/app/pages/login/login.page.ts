@@ -19,4 +19,7 @@ export class LoginPage implements OnInit {
     this.navCtrl.navigateRoot('/tabs/home');
     console.log(this.email, this.password);
   }
+  onClick () {  
+    this.navCtrl.navigateRoot('login/cambiar-contra');
+  }
 }
