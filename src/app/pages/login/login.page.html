@@ -1,12 +1,14 @@
-<app-encabezado titulo="perfil"></app-encabezado>
+<app-encabezado titulo="Login"></app-encabezado>
 
 <ion-content class="ion-padding">
   <ion-card>
     <ion-card-header>
       <ion-card-title>Loguearse xd</ion-card-title>
     </ion-card-header>
+
     <ion-card-content>
-      <ion-input
+      <form (ngSubmit)="iniciarSesion()">
+        <ion-input
         class="ion-margin-bottom"
         fill="outline"
         type="email"
@@ -14,9 +16,10 @@
         placeholder="Ingrese su correo"
         helperText="Ingrese su correo institucional"
         labelPlacement="stacked"
-        errorText="Pone el correo bien persona de bajo intelecto"
-        ngModel
-        email
+        errorText="Pone el correo bien, persona de bajo intelecto"
+        [(ngModel)]="email"
+        name="email"
+        required
       ></ion-input>
       <ion-input
         class="ion-margin-bottom"
@@ -25,13 +28,21 @@
         placeholder="Ingrese una contraseña"
         label="Contraseña"
         labelPlacement="stacked"
+        [(ngModel)]="password"
+        name="password"
+        required
       >
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+
       </ion-input>
+        <ion-button expand="full" type="submit">iniciar Sesion </ion-button>
+      </form>
     </ion-card-content>
   </ion-card>
-  <ion-button (click)="onClick()" expand="block" fill="clear" shape="round">
-    cerrar sesion
-  </ion-button>
-
+  <ion-content>
+    <ion-button (click)="onClick()" expand="block" fill="clear" shape="round">
+      ¿se te olvidó la contraseña?
+    </ion-button>
+  </ion-content>
 </ion-content>
+
