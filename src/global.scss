@@ -35,9 +35,3 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
-
-body.dark-theme {
-    ion-tab-button ion-icon {
-        color: var(--ion-color-light);
-    }
-}
