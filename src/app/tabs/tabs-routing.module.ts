@@ -17,10 +17,6 @@ const routes: Routes = [
         loadChildren: () => import('../pages/perfil/perfil.module').then(m => m.PerfilPageModule)
       },
       {
-        path: 'buscar',
-        loadChildren: () => import('../pages/buscar/buscar.module').then(m => m.BuscarPageModule)
-      }, 
-      {
         path: '',
         redirectTo: '/tabs/home',
         pathMatch: 'full'
