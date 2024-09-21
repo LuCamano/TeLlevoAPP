@@ -20,8 +20,7 @@ export class TabsPage implements OnInit {
       url: '/tabs/perfil',
       icon: 'person-circle',
       color: 'tertiary'
-    },
-    
+    }, 
   ];
 
   constructor() { }
