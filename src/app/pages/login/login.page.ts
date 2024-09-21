@@ -22,4 +22,9 @@ export class LoginPage implements OnInit {
   onClick () {  
     this.navCtrl.navigateRoot('login/cambiar-contra');
   }
+  onClick2 () {  
+    this.navCtrl.navigateRoot('login/crear');
+  }
+
+
 }

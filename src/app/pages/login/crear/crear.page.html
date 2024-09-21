@@ -1,0 +1,16 @@
+<app-encabezado titulo="cree su cuenta"></app-encabezado>
+<ion-content class="ion-padding">
+<ion-item>
+  <ion-icon slot="start" name="mail"></ion-icon>
+  <ion-input label="Correo Electronico" label-placement="floating" placeholder="ingrese su correo" type="email"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-icon slot="start" name="finger-print"></ion-icon>
+  <ion-input label="Contraseña" label-placement="floating" placeholder="ingrese su contraseña" type="password"></ion-input>
+</ion-item>
+<ion-button class="ion-padding" (click)="crearCuenta()" expand="block" shape="round">
+  crear cuenta
+</ion-button>
+</ion-content>
+
