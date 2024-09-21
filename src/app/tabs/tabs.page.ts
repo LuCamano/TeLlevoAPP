@@ -16,9 +16,15 @@ export class TabsPage implements OnInit {
       color: 'tertiary'
     },
     {
-      title: 'Buscar',
+      title: 'Viajes disponibles',
       url: '/tabs/buscar',
-      icon: 'search-circle',
+      icon: 'airplane',
+      color: 'tertiary'
+    },
+    {
+      title: 'uber',
+      url: '/tabs/uber',
+      icon: 'car-sport',
       color: 'tertiary'
     },
     {
