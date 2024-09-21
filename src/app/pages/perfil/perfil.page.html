@@ -1,37 +1,29 @@
 <app-encabezado titulo="perfil"></app-encabezado>
-
 <ion-content class="ion-padding">
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Loguearse xd</ion-card-title>
+      <ion-card-title>Juanito Alcachofa</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-input
-        class="ion-margin-bottom"
-        fill="outline"
-        type="email"
-        label="Correo"
-        placeholder="Ingrese su correo"
-        helperText="Ingrese su correo institucional"
-        labelPlacement="stacked"
-        errorText="Pone el correo bien persona de bajo intelecto"
-        ngModel
-        email
-      ></ion-input>
-      <ion-input
-        class="ion-margin-bottom"
-        fill="outline"
-        type="password"
-        placeholder="Ingrese una contraseña"
-        label="Contraseña"
-        labelPlacement="stacked"
-      >
-        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-      </ion-input>
+      Aquí aun no se me ocurre que poner
+    </ion-card-content>
+    <ion-button fill="clear">Editar perfil</ion-button>
+  </ion-card>
+  
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Historial de viajes</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let viaje of viajes">
+          <ion-label>{{viaje.fecha}}</ion-label>
+          <ion-button id={{viaje.id}}>Ver detalles</ion-button>
+          <ion-alert trigger="{{viaje.id}}" header="viaje el {{viaje.fecha}} "
+            subHeader="nombre del conductor:{{viaje.conductor}}" message="ubicacion: {{viaje.lugar}}"
+            [buttons]="alertButtons"></ion-alert>
+        </ion-item>
+      </ion-list>
     </ion-card-content>
   </ion-card>
-  <ion-button (click)="onClick()" expand="block" fill="clear" shape="round">
-    cerrar sesion
-  </ion-button>
-
 </ion-content>

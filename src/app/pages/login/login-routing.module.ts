@@ -10,6 +10,10 @@ const routes: Routes = [
   },  {
     path: 'cambiar-contra',
     loadChildren: () => import('./cambiar-contra/cambiar-contra.module').then( m => m.CambiarContraPageModule)
+  },
+  {
+    path: 'crear',
+    loadChildren: () => import('./crear/crear.module').then( m => m.CrearPageModule)
   }
 
 ];
