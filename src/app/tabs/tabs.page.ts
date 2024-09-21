@@ -16,11 +16,18 @@ export class TabsPage implements OnInit {
       color: 'tertiary'
     },
     {
+      title: 'Buscar',
+      url: '/tabs/buscar',
+      icon: 'search-circle',
+      color: 'tertiary'
+    },
+    {
       title: 'Perfil',
       url: '/tabs/perfil',
       icon: 'person-circle',
       color: 'tertiary'
-    }
+    },
+    
   ];
 
   constructor() { }
