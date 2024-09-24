@@ -19,9 +19,9 @@
         <ion-item *ngFor="let viaje of viajes">
           <ion-label>{{viaje.fecha}}</ion-label>
           <ion-button id={{viaje.id}}>Ver detalles</ion-button>
-          <ion-alert trigger="{{viaje.id}}" header="viaje el {{viaje.fecha}} "
-            subHeader="nombre del conductor:{{viaje.conductor}}" message="ubicacion: {{viaje.lugar}}"
-            [buttons]="alertButtons"></ion-alert>
+          <ion-alert trigger="{{viaje.id}}" header="viaje el {{viaje.fecha}}"
+            subHeader="nombre del conductor:{{viaje.conductor}}" message="ubicación: {{viaje.lugar}}"
+            [buttons]="['ok']"></ion-alert>
         </ion-item>
       </ion-list>
     </ion-card-content>
