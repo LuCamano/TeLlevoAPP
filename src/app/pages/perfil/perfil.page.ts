@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -15,13 +14,8 @@ export class PerfilPage implements OnInit {
     { id:'3',fecha: '2024-09-23', conductor: 'Carlos Díaz', lugar: 'Concepción' }
   ];
 
-  constructor(private navCtrl: NavController) { }
+  constructor() { }
 
   ngOnInit() {
   }
-  onClick () {  
-    this.navCtrl.navigateRoot('login');
-  }
-  alertButtons = ['ok'];
-  
 }

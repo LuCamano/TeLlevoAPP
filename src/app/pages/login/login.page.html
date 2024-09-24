@@ -1,13 +1,13 @@
-<app-encabezado titulo="Login"></app-encabezado>
+<app-encabezado titulo="Inicio de sesión"></app-encabezado>
 
 <ion-content class="ion-padding">
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Loguearse</ion-card-title>
+      <ion-card-title>Iniciar Sesión</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
-      <form (ngSubmit)="iniciarSesion()">
+      <form (ngSubmit)="iniciarSesion()" #loginForm="ngForm">
         <ion-input
         class="ion-margin-bottom"
         fill="outline"
@@ -17,7 +17,7 @@
         helperText="Ingrese su correo institucional"
         labelPlacement="stacked"
         errorText="Pone el correo bien, persona de bajo intelecto"
-        [(ngModel)]="email"
+        [(ngModel)]="user.email"
         name="email"
         required
       ></ion-input>
@@ -28,25 +28,23 @@
         placeholder="Ingrese una contraseña"
         label="Contraseña"
         labelPlacement="stacked"
-        [(ngModel)]="password"
+        [(ngModel)]="user.password"
         name="password"
         required
       >
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-
       </ion-input>
-      <ion-button expand="full" type="submit">iniciar Sesion </ion-button>
+      <ion-button expand="full" type="submit" [disabled]="loginForm.invalid">iniciar Sesion</ion-button>
       </form>
     </ion-card-content>
     <ion-card-content>
-      <ion-button (click)="onClick()" expand="block" fill="clear" shape="round">
+      <ion-button routerLink="cambiar-contra" routerDirection="forward" expand="block" fill="clear" shape="round">
         ¿se te olvidó la contraseña?
       </ion-button>
-      <ion-button class="ion-padding" (click)="onClick2()" expand="block">
+      <ion-button routerLink="crear" routerDirection="forward" class="ion-padding" expand="block">
         crear cuenta
       </ion-button>
     </ion-card-content>
   </ion-card>
   
 </ion-content>
-

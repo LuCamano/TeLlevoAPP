@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-crear',
   templateUrl: './crear.page.html',
@@ -7,11 +6,13 @@ import { NavController } from '@ionic/angular';
 })
 export class CrearPage implements OnInit {
 
-  constructor(private navCtrl: NavController) { }
+  newUser = {
+    email: '',
+    password: ''
+  }
+
+  constructor() { }
 
   ngOnInit() {
   }
-  crearCuenta(){
-    this.navCtrl.navigateRoot('login');
-  } 
 }

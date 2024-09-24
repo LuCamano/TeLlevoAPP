@@ -7,24 +7,18 @@ import { NavController } from '@ionic/angular';
 })
 export class LoginPage implements OnInit {
   
-  email: string = '';
-  password: string = '';
-
-  constructor(private navCtrl: NavController ) { }
-
-  ngOnInit() {
+  user = {
+    email: '',
+    password: ''
   }
+
+  constructor(private navCtrl: NavController) { }
+
+  ngOnInit() { }
+
   iniciarSesion() {
     // para mandarlos al home
-    this.navCtrl.navigateRoot('/tabs/home');
-    console.log(this.email, this.password);
+    this.navCtrl.navigateRoot('/tabs');
+    console.log(this.user.email, this.user.password);
   }
-  onClick () {  
-    this.navCtrl.navigateRoot('login/cambiar-contra');
-  }
-  onClick2 () {  
-    this.navCtrl.navigateRoot('login/crear');
-  }
-
-
 }
