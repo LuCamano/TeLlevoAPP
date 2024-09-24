@@ -1,19 +1,33 @@
-<app-encabezado titulo="home"></app-encabezado>
+<app-encabezado titulo="inicio"></app-encabezado>
 <ion-content class="ion-padding">
-  <ion-grid fixed>
-    <ion-row>
-      <ion-col class="primary ion-text-center" size="3">
-        Primario
-      </ion-col>
-      <ion-col class="secondary ion-text-center" size="3">
-        Secundario
-      </ion-col>
-      <ion-col class="tertiary ion-text-center" size="3">
-        Terciario
-      </ion-col>
-      <ion-col class="success ion-text-center" size="3">
-        Success
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-text>
+    <h1>Bienvenido, Juanito</h1>
+    <h4>Viajes disponibles:</h4>
+  </ion-text>
+  @for (viaje of viajes; track $index) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{viaje.hora}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>Conductor: {{viaje.conductor}}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Destino: {{viaje.destino}}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Costo: {{viaje.precio}}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Asientos disponibles: {{viaje.asientosDisponibles}}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-button (click)="mostrarDetalle(viaje)">Ver detalles</ion-button>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  }
 </ion-content>
