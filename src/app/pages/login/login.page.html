@@ -19,6 +19,7 @@
         errorText="Pone el correo bien, persona de bajo intelecto"
         [(ngModel)]="user.email"
         name="email"
+        email
         required
       ></ion-input>
       <ion-input
@@ -38,12 +39,14 @@
       </form>
     </ion-card-content>
     <ion-card-content>
-      <ion-button routerLink="cambiar-contra" routerDirection="forward" expand="block" fill="clear" shape="round">
-        ¿se te olvidó la contraseña?
+      <ion-button routerLink="forgot-password" routerDirection="forward" expand="block" fill="clear" shape="round">
+        ¿Olvidaste tu contraseña?
       </ion-button>
-      <ion-button routerLink="crear" routerDirection="forward" class="ion-padding" expand="block">
-        crear cuenta
-      </ion-button>
+      <ion-nav-link routerDirection="forward" routerLink="register">
+        <ion-button class="ion-padding" expand="block">
+          Crear cuenta
+        </ion-button>
+      </ion-nav-link>
     </ion-card-content>
   </ion-card>
   
