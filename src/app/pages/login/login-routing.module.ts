@@ -9,13 +9,14 @@ const routes: Routes = [
     component: LoginPage
   },
   {
-    path: 'cambiar-contra',
-    loadChildren: () => import('./cambiar-contra/cambiar-contra.module').then( m => m.CambiarContraPageModule)
-  },
-  {
-    path: 'crear',
-    loadChildren: () => import('./crear/crear.module').then( m => m.CrearPageModule)
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },  {
+    path: 'forgot-password',
+    loadChildren: () => import('./forgot-password/forgot-password.module').then( m => m.ForgotPasswordPageModule)
   }
+
+
 
 ];
 

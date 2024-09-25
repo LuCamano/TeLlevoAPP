@@ -1,0 +1,30 @@
+<app-encabezado titulo="Registro" [shouldGoBack]="true"></app-encabezado>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Crear cuenta</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form #registroForm="ngForm">
+        <ion-input class="ion-margin-bottom" fill="outline" label="Correo" labelPlacement="stacked"
+          helperText="Ingrese su correo institucional" errorText="Ingrese un correo válido" type="email" email
+          placeholder="Ingrese su correo" [(ngModel)]="newUserData.email" name="email" required></ion-input>
+        <ion-input class="ion-margin-bottom" fill="outline" label="Contraseña" labelPlacement="stacked"
+          errorText="Debe ingresar una contraseña válida" type="password" placeholder="Ingrese una contraseña"
+          [(ngModel)]="newUserData.password" name="password" required>
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-input class="ion-margin-bottom" fill="outline" label="Confirmar contraseña" labelPlacement="stacked"
+          errorText="Las contraseñas deben coincidir" type="password"
+          placeholder="Vuelva a ingresar su contraseña" [(ngModel)]="newUserData.confirmPassword"
+          name="confirmPassword" required>
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-button expand="block" [disabled]="registroForm.invalid">
+          Crear cuenta
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

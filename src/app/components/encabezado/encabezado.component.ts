@@ -10,6 +10,9 @@ export class EncabezadoComponent  implements OnInit {
   @Input()
   titulo: string = "";
 
+  @Input()
+  shouldGoBack: boolean = false;
+
   constructor() { }
   
   ngOnInit() {
