@@ -62,6 +62,6 @@ export class ViajesPage implements OnInit {
   }
 
   mostrarFiltro() {
-    this.menuCtrl.open('end');
+    this.menuCtrl.open('viajes-menu');
   }
 }
