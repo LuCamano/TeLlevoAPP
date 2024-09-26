@@ -7,7 +7,15 @@ const routes: Routes = [
   {
     path: '',
     component: ConducirPage
+  },  {
+    path: 'crear-viajes',
+    loadChildren: () => import('./crear-viajes/crear-viajes.module').then( m => m.CrearViajesPageModule)
+  },
+  {
+    path: 'adm-viajes',
+    loadChildren: () => import('./adm-viajes/adm-viajes.module').then( m => m.AdmViajesPageModule)
   }
+
 ];
 
 @NgModule({

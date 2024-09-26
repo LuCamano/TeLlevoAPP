@@ -1,13 +1,20 @@
-<app-encabezado titulo="conducir" [shouldGoBack]="true"></app-encabezado>
+<app-encabezado titulo="Conducir" [shouldGoBack]="true"></app-encabezado>
 
 <ion-content class="ion-padding">
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Conducir</ion-card-title>
+      <ion-card-title>Publica tu vieje</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-button expand="block">Iniciar viaje</ion-button>
-      <ion-button expand="block">Finalizar viaje</ion-button>
+      <ion-button routerDirection="forward" routerLink="crear-viajes" expand="block">Publicar</ion-button>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Administra tu viaje</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button routerDirection="forward" routerLink="adm-viajes" expand="block">Administrar</ion-button>
     </ion-card-content>
   </ion-card>
   <ion-card>
