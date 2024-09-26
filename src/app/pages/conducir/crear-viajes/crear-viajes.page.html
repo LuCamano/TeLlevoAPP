@@ -1,17 +1,22 @@
 <app-encabezado titulo="Publica un vieje" [shouldGoBack]="true"></app-encabezado>
 
 <ion-content>
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>Publicar vieje</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <ion-input label="Destino" labelPlacement="floating" fill="outline" helperText="Ingrese un destino para su viaje" email placeholder="Ingrese su destino" required></ion-input>
-    <ion-input label="Hora" labelPlacement="floating" fill="outline" helperText="Ingrese un horario para su viaje" email placeholder="Ingrese un horario" required></ion-input>
-    <ion-input label="Costo" labelPlacement="floating" fill="outline" helperText="Ingrese un costo para su viaje" email placeholder="Ingrese un costo" required></ion-input>
-    <ion-input label="Asientos" labelPlacement="floating" fill="outline" helperText="Ingrese la cantidad de asientos para su viaje" email placeholder="Ingrese los asientos" required></ion-input>
-    <ion-button expand="block">Publicar</ion-button>
-  </ion-card-content>
-</ion-card>
-  
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col sizeMd="6" offsetMd="3">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Publicar vieje</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-input label="Destino" labelPlacement="floating" fill="outline" helperText="Ingrese un destino para su viaje" email placeholder="Ingrese su destino" required></ion-input>
+            <ion-input label="Hora" labelPlacement="floating" fill="outline" helperText="Ingrese un horario para su viaje" email placeholder="Ingrese un horario" required></ion-input>
+            <ion-input label="Costo" labelPlacement="floating" fill="outline" helperText="Ingrese un costo para su viaje" email placeholder="Ingrese un costo" required></ion-input>
+            <ion-input label="Asientos" labelPlacement="floating" fill="outline" helperText="Ingrese la cantidad de asientos para su viaje" email placeholder="Ingrese los asientos" required></ion-input>
+            <ion-button expand="block">Publicar</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
