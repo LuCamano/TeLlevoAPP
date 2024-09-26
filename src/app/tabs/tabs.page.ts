@@ -18,7 +18,7 @@ export class TabsPage implements OnInit {
     {
       title: 'Viajes',
       url: '/tabs/viajes',
-      icon: 'car',
+      icon: 'car-sharp',
       color: 'tertiary'
     }, 
     {
