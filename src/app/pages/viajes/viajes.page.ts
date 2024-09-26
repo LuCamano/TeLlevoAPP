@@ -15,48 +15,52 @@ export class ViajesPage implements OnInit {
     { id: 4, hora: '19:00', conductor: 'Sebastian', destino: 'Hualpén', precio: 1500, asientosDisponibles: 1 },
     { id: 5, hora: '20:00', conductor: 'Nicolás', destino: 'San Pedro de la Paz', precio: 2000, asientosDisponibles: 5 }
   ];
-  
-  ubicaciones = [
-    {id:1, nombre: 'Hualpén'},
-    {id:2, nombre: 'Concepción'},
-    {id:3, nombre: 'Chiguayante'},
-    {id:4, nombre: 'Talcahuano'},
-    {id:5, nombre: 'San Pedro de la Paz'}
-  ]
-  horarios = [
-    {id:1, hora: '16:00'},
-    {id:2, hora: '17:00'},
-    {id:3, hora: '18:00'},
-    {id:4, hora: '19:00'},
-    {id:5, hora: '20:00'}
-  ]
-  Asientos = [
-    {id:1, cantidad: 1},
-    {id:2, cantidad: 2},
-    {id:3, cantidad: 3} 
-  ]
-  Precios = [
-    {id:1, precio: 1000},
-    {id:2, precio: 2000},
-    {id:3, precio: 3000},
-    {id:4, precio: 4000},
-    {id:5, precio: 5000}
-  ]
+
   constructor(private alertController: AlertController,private menuCtrl: MenuController) { }
 
   ngOnInit() {
   }
   
-  mostrarDetalle(viaje: any){
-    this.alertController.create({
-      header: 'Viaje a las ' + viaje.hora,
-      subHeader: 'Conductor: ' + viaje.conductor,
-      message: `Destino: ${viaje.destino} \nPrecio: $${viaje.precio} \nAsientos disponibles: ${viaje.asientosDisponibles}`,
-      buttons: ['OK']
-    }).then(detalles => {
-      detalles.present();
+  filtrarDato(arr: Array<{ [key: string]: any }>, key: string): any[] {
+    let result: any[] = [];
+    arr.forEach(element => {
+      if (element.hasOwnProperty(key)) {
+        result.push(element[key]);
+      }
     });
+    result = result.filter((item, index) => {
+      return result.indexOf(item) === index;
+    });
+    result = result.sort();
+    return result;
   }
+
+  solitcitarViaje(viaje: any) {
+    this.alertController.create({
+      header: 'Solicitar viaje',
+      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.hora} con destino a ${viaje.destino}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Aceptar',
+          role: 'ok',
+          handler: () => {
+            this.alertController.create({
+              header: 'Solicitud enviada',
+              message: `Tu solicitud para el viaje de las ${viaje.hora} con destino a ${viaje.destino} ha sido enviada con éxito.`,
+              buttons: ['Aceptar']
+            }).then(alert => {
+              alert.present();
+            })
+          }
+        }
+      ]
+    }).then(alert => alert.present());
+  }
+
   mostrarFiltro() {
     this.menuCtrl.open('end');
   }
