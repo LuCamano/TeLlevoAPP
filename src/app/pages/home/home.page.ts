@@ -21,14 +21,29 @@ export class HomePage implements OnInit {
   ngOnInit() {
   }
 
-  mostrarDetalle(viaje: any){
+  solitcitarViaje(viaje: any) {
     this.alertController.create({
-      header: 'Viaje a las ' + viaje.hora,
-      subHeader: 'Conductor: ' + viaje.conductor,
-      message: `Destino: ${viaje.destino} \nPrecio: $${viaje.precio} \nAsientos disponibles: ${viaje.asientosDisponibles}`,
-      buttons: ['OK']
-    }).then(detalles => {
-      detalles.present();
-    });
+      header: 'Solicitar viaje',
+      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.hora} con destino a ${viaje.destino}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Aceptar',
+          role: 'ok',
+          handler: () => {
+            this.alertController.create({
+              header: 'Solicitud enviada',
+              message: `Tu solicitud para el viaje de las ${viaje.hora} con destino a ${viaje.destino} ha sido enviada con éxito.`,
+              buttons: ['Aceptar']
+            }).then(alert => {
+              alert.present();
+            })
+          }
+        }
+      ]
+    }).then(alert => alert.present());
   }
 }

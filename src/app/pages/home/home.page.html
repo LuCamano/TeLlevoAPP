@@ -7,15 +7,15 @@
   @for (viaje of viajes; track $index) {
     <ion-card>
       <ion-card-header>
-        <ion-card-title>{{viaje.hora}}</ion-card-title>
+        <ion-card-title>{{viaje.conductor}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
           <ion-item>
-            <ion-label>Conductor: {{viaje.conductor}}</ion-label>
+            <ion-label>Destino: {{viaje.destino}}</ion-label>
           </ion-item>
           <ion-item>
-            <ion-label>Destino: {{viaje.destino}}</ion-label>
+            <ion-label>Hora: {{viaje.hora}}</ion-label>
           </ion-item>
           <ion-item>
             <ion-label>Costo: {{viaje.precio}}</ion-label>
@@ -24,7 +24,7 @@
             <ion-label>Asientos disponibles: {{viaje.asientosDisponibles}}</ion-label>
           </ion-item>
           <ion-item>
-            <ion-button (click)="mostrarDetalle(viaje)">Ver detalles</ion-button>
+            <ion-button (click)="solitcitarViaje(viaje)">Solicitar viaje</ion-button>
           </ion-item>
         </ion-list>
       </ion-card-content>
