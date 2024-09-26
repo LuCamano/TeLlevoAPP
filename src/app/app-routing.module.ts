@@ -17,7 +17,11 @@ const routes: Routes = [
   {
     path: 'ajustes',
     loadChildren: () => import('./pages/ajustes/ajustes.module').then( m => m.AjustesPageModule)
+  },  {
+    path: 'conducir',
+    loadChildren: () => import('./pages/conducir/conducir.module').then( m => m.ConducirPageModule)
   }
+
 
 ];
 
