@@ -30,8 +30,8 @@ export class LoginPage implements OnInit {
       }
     } catch (error) {
       this.utils.presentToast({
-        icon: 'error',
-        message: 'Error al iniciar sesión',
+        icon: 'close-circle-sharp',
+        message: 'Credenciales incorrectas',
         color: 'danger',
         duration: 2500
       });
