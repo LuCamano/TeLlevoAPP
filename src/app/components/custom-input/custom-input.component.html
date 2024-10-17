@@ -8,6 +8,7 @@
     [errorText]="error"
     [label]="label"
     labelPlacement="floating"
+    (ionChange)="onChange"
     ></ion-input>
   <ion-button *ngIf="isPassword" (click)="toggleHidePassword()" expand="block" fill="clear" shape="round">
     <ion-icon [name]="hide? 'eye-sharp':'eye-off-sharp'"></ion-icon>

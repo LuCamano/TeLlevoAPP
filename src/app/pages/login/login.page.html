@@ -21,9 +21,11 @@
           ></app-custom-input>
           <ion-button expand="block" type="submit" [disabled]="loginForm.invalid">iniciar Sesión</ion-button>
         </form>
-        <ion-button routerLink="forgot-password" routerDirection="forward" expand="block" fill="clear" shape="round">
-          ¿Olvidaste tu contraseña?
-        </ion-button>
+        <div class="ion-text-center" style="width: 100%;">
+          <a routerLink="forgot-password" routerDirection="forward" expand="full" fill="clear" style="text-decoration: none;">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
         <ion-nav-link routerDirection="forward" routerLink="register">
           <ion-button class="ion-padding" expand="block">
             Crear cuenta

@@ -16,6 +16,7 @@ export class CustomInputComponent  implements OnInit {
   @Input() error!: string;
   @Input() disabled = false;
   @Input() readonly = false;
+  @Input() onChange: any;
 
   isPassword = false;
   hide = true;
