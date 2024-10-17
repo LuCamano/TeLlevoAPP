@@ -39,8 +39,9 @@ export class RegisterPage implements OnInit {
       loading.present();
       const email = this.registroForm.value.email;
       const password = this.registroForm.value.password;
+      const nombre = this.registroForm.value.nombre;
       try {
-        const user = await this.authSvc.signUp(email!, password!);
+        const user = await this.authSvc.signUp(email!, password!, nombre!);
         if (user) {
           this.utils.navigateForwardto("/login");
         }

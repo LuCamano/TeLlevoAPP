@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertButton } from '@ionic/angular';
+import { AuthService } from './services/auth.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -22,13 +23,13 @@ export class AppComponent {
     }
   ]
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private authSvc: AuthService) {
     this.router.events.subscribe(val => {
       this.isValidUser = !this.router.url.includes('/login');
     });
   }
   
   logout() {
-    this.router.navigate(['/login']);
+    this.authSvc.signOut();
   }
 }

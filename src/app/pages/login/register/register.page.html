@@ -34,7 +34,7 @@
             type="password"
             [onChange]="validarContraseniasIguales()"
           ></app-custom-input>
-          <ion-button expand="block" [disabled]="registroForm.invalid">
+          <ion-button expand="block" type="submit" [disabled]="registroForm.invalid">
             Crear cuenta
           </ion-button>
         </form>
