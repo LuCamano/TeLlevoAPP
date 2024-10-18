@@ -15,6 +15,7 @@ export class RegisterPage implements OnInit {
 
   registroForm = new FormGroup({
     nombre: new FormControl('', [Validators.required, Validators.minLength(4)]),
+    apellidos: new FormControl('', [Validators.required, Validators.minLength(4)]),
     email: new FormControl('', [Validators.email, Validators.required]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     password2: new FormControl('', [Validators.required, Validators.minLength(6)]),
@@ -40,8 +41,9 @@ export class RegisterPage implements OnInit {
       const email = this.registroForm.value.email;
       const password = this.registroForm.value.password;
       const nombre = this.registroForm.value.nombre;
+      const apellidos = this.registroForm.value.apellidos;
       try {
-        const user = await this.authSvc.signUp(email!, password!, nombre!);
+        const user = await this.authSvc.signUp(email!, password!, nombre!, apellidos!);
         if (user) {
           this.utils.navigateForwardto("/login");
         }
