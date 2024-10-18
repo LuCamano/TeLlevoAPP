@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { NavigationExtras, Router } from '@angular/router';
 import { LoadingController, NavController, ToastController, ToastOptions } from '@ionic/angular';
 
 @Injectable({
@@ -8,6 +9,7 @@ export class UtilsService {
   // Inyecciones de dependencias
   private toastController = inject(ToastController);
   private loadingController= inject(LoadingController);
+  private router = inject(Router);
   private navCtrl = inject(NavController);
 
   presentToast(opts:ToastOptions){
@@ -23,15 +25,27 @@ export class UtilsService {
     });
   }
 
-  navigateForwardto(route:string){
-    this.navCtrl.navigateForward(route);
+  navigateForwardto(route:string, extras?:NavigationExtras){
+    this.navCtrl.navigateForward(route, extras);
   }
 
   navigateBack(){
     this.navCtrl.back();
   }
 
-  navigateRoot(route:string){
-    this.navCtrl.navigateRoot(route);
+  navigateRoot(route:string, extras?:NavigationExtras){
+    this.navCtrl.navigateRoot(route, extras);
+  }
+
+  saveInLocalStorage(key:string, value:any){
+    return localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  getFromLocalStorage(key:string){
+    return JSON.parse(localStorage.getItem(key)!);
+  }
+
+  retrieveRouterEvents() {
+    return this.router.events;
   }
 }
