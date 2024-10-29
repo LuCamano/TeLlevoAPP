@@ -1,0 +1,17 @@
+<ion-item lines="none" class="ion-margin-bottom">
+  <ion-icon slot="start" [name]="icon"></ion-icon>
+  <ion-input 
+    [type]="type"
+    [placeholder]="placeholder"
+    [formControl]="control"
+    [disabled]="disabled"
+    [errorText]="error"
+    [maxlength]="maxLength"
+    [label]="label"
+    labelPlacement="floating"
+    (ionChange)="onChange"
+    ></ion-input>
+  <ion-button *ngIf="isPassword" (click)="toggleHidePassword()" expand="block" fill="clear" shape="round">
+    <ion-icon [name]="hide? 'eye-sharp':'eye-off-sharp'"></ion-icon>
+  </ion-button>
+</ion-item>

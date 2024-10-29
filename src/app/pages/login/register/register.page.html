@@ -4,32 +4,47 @@
   <ion-grid fixed>
     <ion-row>
       <ion-col sizeMd="4" offsetMd="4">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Crear cuenta</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <form #registroForm="ngForm">
-              <ion-input class="ion-margin-bottom" fill="outline" label="Correo" labelPlacement="stacked"
-                helperText="Ingrese su correo institucional" errorText="Ingrese un correo válido" type="email" email
-                placeholder="Ingrese su correo" [(ngModel)]="newUserData.email" name="email" required></ion-input>
-              <ion-input class="ion-margin-bottom" fill="outline" label="Contraseña" labelPlacement="stacked"
-                errorText="Debe ingresar una contraseña válida" type="password" placeholder="Ingrese una contraseña"
-                [(ngModel)]="newUserData.password" name="password" required>
-                <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-              </ion-input>
-              <ion-input class="ion-margin-bottom" fill="outline" label="Confirmar contraseña" labelPlacement="stacked"
-                errorText="Las contraseñas deben coincidir" type="password"
-                placeholder="Vuelva a ingresar su contraseña" [(ngModel)]="newUserData.confirmPassword"
-                name="confirmPassword" required>
-                <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-              </ion-input>
-              <ion-button expand="block" [disabled]="registroForm.invalid">
-                Crear cuenta
-              </ion-button>
-            </form>
-          </ion-card-content>
-        </ion-card>
+        <form [formGroup]="registroForm" (ngSubmit)="registrar()">
+          <app-custom-input
+            [control]="registroForm.controls.nombre"
+            label="Nombre"
+            icon="person"
+            placeholder="Ingrese su nombre"
+            type="text"
+          ></app-custom-input>
+          <app-custom-input
+            [control]="registroForm.controls.apellidos"
+            label="Apellidos"
+            icon="person"
+            placeholder="Ingrese sus apellidos"
+            type="text"
+          ></app-custom-input>
+          <app-custom-input
+            [control]="registroForm.controls.email"
+            label="Email"
+            icon="mail"
+            placeholder="Ingrese su correo"
+            type="email"
+          ></app-custom-input>
+          <app-custom-input
+            [control]="registroForm.controls.password"
+            label="Contraseña"
+            icon="lock-closed"
+            placeholder="Ingrese su contraseña"
+            type="password"
+          ></app-custom-input>
+          <app-custom-input
+            [control]="registroForm.controls.password2"
+            label="Confirmar contraseña"
+            icon="lock-closed"
+            placeholder="Vuelva a ingresar su contraseña"
+            type="password"
+            [onChange]="validarContraseniasIguales()"
+          ></app-custom-input>
+          <ion-button expand="block" type="submit" [disabled]="registroForm.invalid">
+            Crear cuenta
+          </ion-button>
+        </form>
       </ion-col>
     </ion-row>
   </ion-grid>

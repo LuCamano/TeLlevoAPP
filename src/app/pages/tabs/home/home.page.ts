@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { AuthService } from '../../../services/auth.service';
+import { UtilsService } from '../../../services/utils.service';
+import { Usuario } from 'src/app/models/models';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +10,13 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
+
+  // Inyectar dependencias
+  private alertController = inject(AlertController);
+  private authSvc = inject(AuthService);
+  private utils = inject(UtilsService);
+
+  nombre!: string;
 
   viajes = [
     { id: 1, hora: '16:00', conductor: 'Leandro', destino: 'Chiguayante', precio: 1000, asientosDisponibles: 3 },
@@ -16,9 +26,19 @@ export class HomePage implements OnInit {
     { id: 5, hora: '20:00', conductor: 'Nicolás', destino: 'San Pedro de la Paz', precio: 2000, asientosDisponibles: 5 }
   ];
 
-  constructor(private alertController: AlertController) { }
-
   ngOnInit() {
+    this.authSvc.getAuthIns().onAuthStateChanged( user => {
+      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
+
+      if(userLocal) {
+        this.nombre = userLocal.name
+      } else {
+        this.authSvc.getCurrentUserData().then( usr => {
+          if (usr) this.nombre = usr.name;
+          else this.nombre = '';
+        });
+      }
+    })
   }
 
   solitcitarViaje(viaje: any) {

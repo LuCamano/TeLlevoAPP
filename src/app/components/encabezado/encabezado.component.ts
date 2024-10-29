@@ -13,6 +13,9 @@ export class EncabezadoComponent  implements OnInit {
   @Input()
   shouldGoBack: boolean = false;
 
+  @Input()
+  defaultHref = "/";
+
   constructor() { }
   
   ngOnInit() {

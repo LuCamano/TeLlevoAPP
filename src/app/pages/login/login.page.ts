@@ -1,24 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UtilsService } from '../../services/utils.service';
+import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  
-  user = {
-    email: '',
-    password: ''
-  }
+  // Inyección de dependencias
+  private utils = inject(UtilsService);
+  private authSvc = inject(AuthService);
 
-  constructor(private navCtrl: NavController) { }
+  loginForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+  });
 
   ngOnInit() { }
 
-  iniciarSesion() {
-    // para mandarlos al home
-    this.navCtrl.navigateRoot('/tabs');
-    console.log(this.user.email, this.user.password);
+  async iniciarSesion() {
+    const { email, password } = this.loginForm.value;
+    const loading = await this.utils.presentLoading();
+    loading.present();
+    try {
+      const user = await this.authSvc.signIn(email!, password!);
+      if (user) {
+        this.utils.navigateRoot('/tabs');
+      }
+    } catch (error) {
+      this.utils.presentToast({
+        icon: 'close-circle-sharp',
+        message: 'Credenciales incorrectas',
+        color: 'danger',
+        duration: 2500
+      });
+    } finally {
+      loading.dismiss();
+    }
   }
 }

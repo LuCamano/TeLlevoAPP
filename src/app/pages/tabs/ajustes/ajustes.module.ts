@@ -4,19 +4,19 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ConducirPageRoutingModule } from './conducir-routing.module';
+import { AjustesPageRoutingModule } from './ajustes-routing.module';
 
-import { ConducirPage } from './conducir.page';
-import { ComponentsModule } from "../../components/components.module";
+import { AjustesPage } from './ajustes.page';
+import { ComponentsModule } from "../../../components/components.module";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ConducirPageRoutingModule,
+    AjustesPageRoutingModule,
     ComponentsModule
 ],
-  declarations: [ConducirPage]
+  declarations: [AjustesPage]
 })
-export class ConducirPageModule {}
+export class AjustesPageModule {}
