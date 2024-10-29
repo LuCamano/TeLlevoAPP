@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { getAuth } from '@angular/fire/auth';
+import { getAuth, EmailAuthProvider } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { getDoc, setDoc, doc } from "@angular/fire/firestore";
 import { Usuario } from '../models/models';
@@ -36,6 +36,20 @@ export class AuthService {
     this.ngFireAuth.signOut();
     localStorage.removeItem('user');
     this.utils.navigateRoot('/login');
+  }
+
+  async changePassword(newPassword:string, currentPassword:string){
+    try {
+      const user = await this.ngFireAuth.currentUser;
+      const credential = EmailAuthProvider.credential(user?.email!, currentPassword);
+      if (credential) {
+        await user?.reauthenticateWithCredential(credential);
+        return await user?.updatePassword(newPassword);
+      }
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error);
+      throw error;
+    }
   }
 
   setDocument(path:string, data:any) {

@@ -26,8 +26,10 @@ export class UtilsService {
     });
   }
 
-  presentAlert(opts?: AlertOptions) {
-    return this.alertController.create(opts);
+  async presentAlert(opts?: AlertOptions) {
+    const alert = await this.alertController.create(opts);
+    alert.present();
+    return alert;
   }
 
   navigateForwardto(route:string, extras?:NavigationExtras){

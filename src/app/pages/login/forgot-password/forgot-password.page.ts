@@ -35,7 +35,15 @@ export class ForgotPasswordPage implements OnInit {
         });
       }).finally( () => {
         loading.dismiss();
-
+        this.utils.presentAlert({
+          header: 'Correo enviado',
+          message: 'Revisa tu bandeja de entrada para restablecer tu contraseña.',
+          buttons: ['Aceptar']
+        }).then( alert => {
+          alert.onDidDismiss().then( () => {
+            this.utils.navigateRoot('/login');
+          });
+        })
       });
     }
   }
