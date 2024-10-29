@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { LoadingController, NavController, ToastController, ToastOptions } from '@ionic/angular';
+import { LoadingController, NavController, ToastController, ToastOptions, AlertController, AlertOptions } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,7 @@ import { LoadingController, NavController, ToastController, ToastOptions } from 
 export class UtilsService {
   // Inyecciones de dependencias
   private toastController = inject(ToastController);
+  private alertController = inject(AlertController);
   private loadingController= inject(LoadingController);
   private router = inject(Router);
   private navCtrl = inject(NavController);
@@ -23,6 +24,10 @@ export class UtilsService {
       spinner: 'crescent',
       message: 'Cargando...',
     });
+  }
+
+  presentAlert(opts?: AlertOptions) {
+    return this.alertController.create(opts);
   }
 
   navigateForwardto(route:string, extras?:NavigationExtras){

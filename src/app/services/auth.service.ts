@@ -28,6 +28,10 @@ export class AuthService {
     return user;
   }
 
+  resetPasswordEmail(email:string) {
+    return this.ngFireAuth.sendPasswordResetEmail(email);
+  }
+
   signOut(){
     this.ngFireAuth.signOut();
     localStorage.removeItem('user');
