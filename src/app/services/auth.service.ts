@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { getAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { getDoc, setDoc, doc } from "@angular/fire/firestore";
-import { Router } from '@angular/router';
 import { Usuario } from '../models/models';
 import { UtilsService } from './utils.service';
 
@@ -11,17 +11,14 @@ import { UtilsService } from './utils.service';
 })
 export class AuthService {
   // Inyecciones de dependencias
-  private router = inject(Router);
   private ngFireAuth = inject(AngularFireAuth);
   private ngFirestore = inject(AngularFirestore);
   private utils = inject(UtilsService);
 
-  signIn(email:string, password:string){
-    const user = this.ngFireAuth.signInWithEmailAndPassword(email, password);
-    user.then( async userRef => { 
-      const userData = await this.getDocument(`usuarios/${userRef.user?.uid}`);
-      this.utils.saveInLocalStorage('user', userData);
-    });
+  async signIn(email:string, password:string){
+    const user = await this.ngFireAuth.signInWithEmailAndPassword(email, password); 
+    const userData = await this.getDocument(`usuarios/${user.user?.uid}`);
+    this.utils.saveInLocalStorage('user', userData);
     return user;
   }
 
@@ -32,9 +29,9 @@ export class AuthService {
   }
 
   signOut(){
-    return this.ngFireAuth.signOut().then(() => {
-      localStorage.clear();
-    });
+    this.ngFireAuth.signOut();
+    localStorage.removeItem('user');
+    this.utils.navigateRoot('/login');
   }
 
   setDocument(path:string, data:any) {
@@ -50,7 +47,7 @@ export class AuthService {
     return (await this.getDocument(`usuarios/${currentUid}`)) as Usuario;
   }
 
-  isLoggedIn() {
-    return this.ngFireAuth.authState;
+  getAuthIns() {
+    return getAuth();
   }
 }

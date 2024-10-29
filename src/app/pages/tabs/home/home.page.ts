@@ -1,7 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { AuthService } from '../../services/auth.service';
-import { UtilsService } from '../../services/utils.service';
+import { AuthService } from '../../../services/auth.service';
+import { UtilsService } from '../../../services/utils.service';
+import { Usuario } from 'src/app/models/models';
 
 @Component({
   selector: 'app-home',
@@ -26,19 +27,18 @@ export class HomePage implements OnInit {
   ];
 
   ngOnInit() {
-    this.authSvc.isLoggedIn().subscribe( isLogged => {
-      if (isLogged) {
-        if (this.utils.getFromLocalStorage('user')) {
-          this.nombre = this.utils.getFromLocalStorage('user').name;
-        } else {
-          this.authSvc.getCurrentUserData().then( user => {
-            this.nombre = user.name;
-          });
-        }
+    this.authSvc.getAuthIns().onAuthStateChanged( user => {
+      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
+
+      if(userLocal) {
+        this.nombre = userLocal.name
       } else {
-        this.nombre = '';
+        this.authSvc.getCurrentUserData().then( usr => {
+          if (usr) this.nombre = usr.name;
+          else this.nombre = '';
+        });
       }
-    });
+    })
   }
 
   solitcitarViaje(viaje: any) {

@@ -5,20 +5,20 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
     component: TabsPage,
     children: [
       {
         path: 'home',
-        loadChildren: () => import('../pages/home/home.module').then(m => m.HomePageModule)
+        loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
       },
       {
         path: 'viajes',
-        loadChildren: () => import('../pages/viajes/viajes.module').then( m => m.ViajesPageModule)
+        loadChildren: () => import('./viajes/viajes.module').then( m => m.ViajesPageModule)
       },
       {
         path: 'perfil',
-        loadChildren: () => import('../pages/perfil/perfil.module').then(m => m.PerfilPageModule)
+        loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule)
       },
       {
         path: '',
@@ -28,9 +28,12 @@ const routes: Routes = [
     ]
   },
   {
-    path: '',
-    redirectTo: '/tabs',
-    pathMatch: 'full'
+    path: 'ajustes',
+    loadChildren: () => import('./ajustes/ajustes.module').then( m => m.AjustesPageModule)
+  },
+  {
+    path: 'conducir',
+    loadChildren: () => import('./conducir/conducir.module').then( m => m.ConducirPageModule)
   }
 ];
 

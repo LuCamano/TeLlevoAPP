@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertButton } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
 import { UtilsService } from './services/utils.service';
+import { Usuario } from './models/models';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -30,18 +31,15 @@ export class AppComponent {
     router.events.subscribe(val => {
       this.isValidUser = !this.router.url.includes('/login');
     });
-    authSvc.isLoggedIn().subscribe( isLogged => {
-      if (isLogged) {
-        if (utils.getFromLocalStorage('user')) {
-          this.userName = utils.getFromLocalStorage('user').name;
-        } else {
-          authSvc.getCurrentUserData().then( user => {
-            this.userName = `${user.name} ${user.lastName}`;
-          })
-        }
+    authSvc.getAuthIns().onAuthStateChanged( user => {
+      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
+      if(userLocal) {
+        this.userName = `${userLocal.name} ${userLocal.lastName}`;
       } else {
-        this.userName = '';
-        utils.navigateRoot('/login');
+        this.authSvc.getCurrentUserData().then( usr => {
+          if (usr) this.userName = `${usr.name} ${usr.lastName}`;
+          else this.userName = '';
+        });
       }
     });
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ITabs } from '../interfaces/itabs';
+import { ITabs } from '../../interfaces/itabs';
 
 @Component({
   selector: 'app-tabs',
