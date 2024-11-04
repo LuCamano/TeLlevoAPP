@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, EmailAuthProvider } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getDoc, setDoc, doc } from "@angular/fire/firestore";
+import { getDoc, setDoc, doc, addDoc, collection } from "@angular/fire/firestore";
 import { Usuario } from '../models/models';
 import { UtilsService } from './utils.service';
 
@@ -58,6 +58,10 @@ export class AuthService {
 
   async getDocument(path:string) {
     return (await getDoc(doc(this.ngFirestore.firestore, path))).data();
+  }
+
+  addDocument(path:string, data:any) {
+    return addDoc(collection(this.ngFirestore.firestore, path), data);
   }
 
   async getCurrentUserData() {
