@@ -2,9 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, EmailAuthProvider } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getDoc, setDoc, doc, addDoc, collection } from "@angular/fire/firestore";
+import { getDoc, setDoc, doc, addDoc, collection, collectionData, query, where, WhereFilterOp } from "@angular/fire/firestore";
 import { Usuario } from '../models/models';
 import { UtilsService } from './utils.service';
+import { ICollectionOpts } from '../interfaces/varios';
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +63,17 @@ export class AuthService {
 
   addDocument(path:string, data:any) {
     return addDoc(collection(this.ngFirestore.firestore, path), data);
+  }
+
+  getCollection(path: string, opts?: ICollectionOpts) {
+    const { field, opStr, value } = opts || {};
+    let q;
+    if (field && opStr && value !== undefined) {
+        q = query(collection(this.ngFirestore.firestore, path), where(field, opStr, value));
+    } else {
+        q = query(collection(this.ngFirestore.firestore, path));
+    }
+    return collectionData(q, { idField: 'id' });
   }
 
   async getCurrentUserData() {

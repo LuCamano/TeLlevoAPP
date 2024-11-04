@@ -11,4 +11,5 @@ export interface Viaje {
     precio: number;
     asientos: number;
     conductor: string;
+    estado: 'disponible' | 'cancelado' | 'finalizado' | 'iniciado' | 'pendiente' | 'lleno';
 }
