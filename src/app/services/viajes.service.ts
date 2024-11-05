@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Viaje } from '../models/models';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { IViajesOpts } from '../interfaces/varios';
 })
 export class ViajesService {
   // Inyecciones de dependencias
-  authSvc = inject(AuthService);
+  private authSvc = inject(AuthService);
 
   async crearViaje(viaje: Viaje){
     try {
@@ -24,11 +24,15 @@ export class ViajesService {
   getViajes(opts?: IViajesOpts): Observable<Viaje[]> {
     try {
       // Obtener los viajes de la base de datos
-      if (opts) {
-        return this.authSvc.getCollection('viajes', opts) as Observable<Viaje[]>;
-      } else {
-        return this.authSvc.getCollection('viajes') as Observable<Viaje[]>;
-      }
+      let viajes$ = (opts ? this.authSvc.getCollection('viajes', opts) : this.authSvc.getCollection('viajes')) as Observable<Viaje[]>;
+      return viajes$.pipe(
+        map( viajes => viajes.map( viaje => {
+          if (viaje.fecha && (viaje.fecha as any).seconds) {
+            viaje.fecha = new Date((viaje.fecha as any).seconds * 1000);
+          }
+          return viaje;
+        }))
+      );
     } catch (error) {
       console.error('Error al obtener los viajes:', error);
       throw error;
