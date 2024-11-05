@@ -15,6 +15,8 @@ export class ConducirPage implements OnInit {
 
   viajes: Viaje[] = [];
 
+  public isLoading = false;
+
   ngOnInit() {
   }
 
@@ -24,19 +26,29 @@ export class ConducirPage implements OnInit {
 
   obtenerViajes() {
     // Obtener los viajes del conductor
-    let sub = this.viajesSvc.getViajes({
-      // Buscar el campo conductor
-      field: 'conductor',
-      // Que sea igual al uid del usuario
-      opStr: '==',
-      value: this.utils.getFromLocalStorage('user').uid
-
-    }).subscribe( listViajes => {
-
-      this.viajes = listViajes;
-      console.log(this.viajes);
-      sub.unsubscribe();
-
-    });
+    this.isLoading = true;
+    try {
+      console.log(this.isLoading);
+      let sub = this.viajesSvc.getViajes({
+        // Buscar el campo conductor
+        field: 'conductor',
+        // Que sea igual al uid del usuario
+        opStr: '==',
+        value: this.utils.getFromLocalStorage('user').uid
+  
+      }).subscribe( listViajes => {
+  
+        this.viajes = listViajes;
+        sub.unsubscribe();
+        this.isLoading = false;
+  
+      });
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al obtener los viajes',
+        duration: 2000
+      });
+    }
   }
 }

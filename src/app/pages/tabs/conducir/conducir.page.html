@@ -29,9 +29,12 @@
           <ion-label>{{ viaje.fecha | date: 'dd/MM/yyyy HH:mm' }}</ion-label>
           <ion-label>{{ viaje.destino }}</ion-label>
         </ion-item>
-        <ion-item *ngIf="viajes.length === 0">
+        <ion-item *ngIf="viajes.length === 0 && isLoading">
           <ion-label><ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text></ion-label>
-          <ion-label><ion-skeleton-text [animated]="true" style="width: 35%;"></ion-skeleton-text></ion-label>
+          <ion-label><ion-skeleton-text [animated]="true" style="width: 50%;"></ion-skeleton-text></ion-label>
+        </ion-item>
+        <ion-item *ngIf="viajes.length === 0 && !isLoading">
+          <ion-label>No has creado ningún viaje</ion-label>
         </ion-item>
       </ion-list>
     </ion-card-content>
