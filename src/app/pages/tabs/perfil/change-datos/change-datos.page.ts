@@ -1,8 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
 import { AuthService } from '../../../../services/auth.service';
 import { UtilsService } from '../../../../services/utils.service';
-import { Usuario } from 'src/app/models/models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-change-datos',
@@ -15,9 +13,6 @@ export class ChangeDatosPage implements OnInit {
   private utils = inject(UtilsService);
 
   nombre!: string;
-  apellido!: string;
-  
-  constructor() { }
 
   profileForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -25,14 +20,18 @@ export class ChangeDatosPage implements OnInit {
     email: new FormControl({ value: '', disabled: true }, [Validators.required, Validators.email]),
   });
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  ionViewWillEnter() {
     this.loadUserData();
-    this.user();
   }
 
   async loadUserData() {
+    const loading = await this.utils.presentLoading();
+    loading.present();
     try {
       const userData = await this.authSvc.getCurrentUserData();
+      this.nombre = `${userData.name} ${userData.lastName}`;
       this.profileForm.setValue({
         name: userData.name || '',
         lastName: userData.lastName || '',
@@ -43,24 +42,9 @@ export class ChangeDatosPage implements OnInit {
         message: 'Error al cargar los datos del usuario',
         color: 'danger'
       });
-    }
+    } finally { loading.dismiss(); }
   }
-  async user() {
-    this.authSvc.getAuthIns().onAuthStateChanged( user => {
-      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
 
-      if(userLocal) {
-        this.nombre = userLocal.name
-        this.apellido = userLocal.lastName
-
-      } else {
-        this.authSvc.getCurrentUserData().then( usr => {
-          if (usr) this.nombre = usr.name;
-          else this.nombre = '';
-        });
-      }
-    })
-  }
   async saveProfile() {
     const loading = await this.utils.presentLoading();
     loading.present();
@@ -85,9 +69,6 @@ export class ChangeDatosPage implements OnInit {
         color: 'success',
         duration: 2500
       });
-      
-      // Actualizar la vista con los datos locales
-      this.user();
     } catch (error) {
       // Manejar el error
       this.utils.presentToast({

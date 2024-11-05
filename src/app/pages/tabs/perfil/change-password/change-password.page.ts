@@ -40,6 +40,7 @@ export class ChangePasswordPage implements OnInit {
         duration: 2500
       });
       this.passwordForm.reset();
+      this.utils.navigateBack();
     } catch (error) {
       this.utils.presentToast({
         message: 'Error al cambiar la contraseña. Verifica tus datos.',
