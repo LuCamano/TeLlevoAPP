@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { Viaje } from 'src/app/models/models';
+import { UtilsService } from 'src/app/services/utils.service';
+import { ViajesService } from 'src/app/services/viajes.service';
 
 @Component({
   selector: 'app-conducir',
@@ -6,31 +9,34 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./conducir.page.scss'],
 })
 export class ConducirPage implements OnInit {
+  // Inyección de dependencias
+  private viajesSvc = inject(ViajesService);
+  private utils = inject(UtilsService);
 
-  viajes = [
-    {
-      destino: 'Talcahuano',
-      fecha: new Date('2020-09-20T09:00:00'),
-      pasajeros: 3,
-      distancia: 15,
-    },
-    {
-      destino: 'Concepción',
-      fecha: new Date('2020-09-20T18:00:00'),
-      pasajeros: 2,
-      distancia: 10,
-    },
-    {
-      destino: 'Chiguayante',
-      fecha: new Date('2020-09-21T09:00:00'),
-      pasajeros: 1,
-      distancia: 20,
-    },
-  ];
-
-  constructor() { }
+  viajes: Viaje[] = [];
 
   ngOnInit() {
   }
 
+  ionViewWillEnter() {
+    this.obtenerViajes();
+  }
+
+  obtenerViajes() {
+    // Obtener los viajes del conductor
+    let sub = this.viajesSvc.getViajes({
+      // Buscar el campo conductor
+      field: 'conductor',
+      // Que sea igual al uid del usuario
+      opStr: '==',
+      value: this.utils.getFromLocalStorage('user').uid
+
+    }).subscribe( listViajes => {
+
+      this.viajes = listViajes;
+      console.log(this.viajes);
+      sub.unsubscribe();
+
+    });
+  }
 }
