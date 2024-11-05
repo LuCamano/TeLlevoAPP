@@ -18,7 +18,7 @@
           <ion-input [(ngModel)]="viaje.comunaDestino" name="comunaDestino" helperText="Ingrese la comuna de destino" errorText="Ingrese una comuna" type="text" label="Comuna destino" placeholder="Talcahuano..." labelPlacement="floating" fill="outline" required></ion-input>
           <br>
           <!-- Cantidad de asientos -->
-          <ion-input [(ngModel)]="viaje.asientos" name="asientos" helperText="Ingrese cantidad de asientos disponibles" errorText="Cantidad de asientos no válida" type="number" label="Cantidad de asientos" placeholder="3" min="1" labelPlacement="floating" fill="outline" required></ion-input>
+          <ion-input [(ngModel)]="viaje.asientos" name="asientos" helperText="Ingrese cantidad de asientos disponibles" errorText="Cantidad de asientos no válida" type="number" label="Cantidad de asientos" placeholder="3" min="1" labelPlacement="floating" fill="outline" (ionInput)="validarAsientos($event)" required></ion-input>
           <br>
           <!-- Precio del viaje -->
           <ion-input [(ngModel)]="viaje.precio" name="precio" helperText="Ingrese el costo del viaje" errorText="Precio no válido" type="number" inputmode="numeric" label="Precio" placeholder="1.500" step="1" min="0" labelPlacement="floating" fill="outline" (ionInput)="validarPrecio($event)" required></ion-input>

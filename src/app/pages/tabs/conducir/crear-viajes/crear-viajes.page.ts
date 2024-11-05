@@ -22,6 +22,11 @@ export class CrearViajesPage implements OnInit {
     this.viaje.precio = event.target.value.replace(/[^0-9]/g, '');
   }
 
+  validarAsientos(event: any){
+    this.viaje.asientos = event.target.value.replace(/[^0-9]/g, '');
+  }
+
+
   async submit(){
     this.viaje.estado = 'disponible';
     this.viaje.conductor = this.utils.getFromLocalStorage('user').uid;
