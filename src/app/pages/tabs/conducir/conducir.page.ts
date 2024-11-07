@@ -22,13 +22,13 @@ export class ConducirPage implements OnInit {
 
   ionViewWillEnter() {
     this.obtenerViajes();
+    // this.obtenerViajesPruebas();
   }
 
   obtenerViajes() {
     // Obtener los viajes del conductor
     this.isLoading = true;
     try {
-      console.log(this.isLoading);
       let sub = this.viajesSvc.getViajes({
         // Buscar el campo conductor
         field: 'conductor',
@@ -51,4 +51,27 @@ export class ConducirPage implements OnInit {
       });
     }
   }
+
+// Codigo para hacer pruebas
+  /* vPruebas: Viaje[] = [];
+
+  obtenerViajesPruebas() {
+    try {
+      let sub = this.viajesSvc.getViajes().subscribe( list => {
+        this.vPruebas = list;
+        sub.unsubscribe();
+      });
+    } catch (error) {
+      console.error('Error al obtener los viajes:', error);
+    }
+  }
+
+  unirseAlViaje(viaje: Viaje){
+    // Unirse al viaje
+    try {
+      this.viajesSvc.unirseAlViaje(viaje);
+    } catch (error) {
+      console.log("pasaron cositas");
+    }
+  } */
 }
