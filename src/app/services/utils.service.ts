@@ -60,4 +60,12 @@ export class UtilsService {
   getCurrentPosition(){
     return Geolocation.getCurrentPosition();
   }
+
+  checkPermissions(){
+    return Geolocation.checkPermissions();
+  }
+
+  requestPermissions(){
+    return Geolocation.requestPermissions();
+  }
 }

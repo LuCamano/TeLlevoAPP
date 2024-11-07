@@ -26,13 +26,23 @@ export class AdmViajesPage implements OnInit {
   }
 
   async buildMap() {
-    const coords = (await this.utils.getCurrentPosition()).coords;
-    this.map = new mapboxgl.Map({
-      container: 'mapa',
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [coords.longitude, coords.latitude],
-      zoom: 12
-    });
-    this.map.resize();
+    try {
+      try {
+        await this.utils.checkPermissions();
+      } catch (error) {
+        await this.utils.requestPermissions();
+      }
+
+      const coords = (await this.utils.getCurrentPosition()).coords;
+      this.map = new mapboxgl.Map({
+        container: 'mapa',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [coords.longitude, coords.latitude],
+        zoom: 12
+      });
+      this.map.resize();
+    } catch (error) {
+      this.utils.navigateBack();
+    }
   }
 }
