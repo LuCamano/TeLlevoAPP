@@ -5,7 +5,7 @@ export interface Usuario {
     uid: string;
 }
 export interface Viaje {
-    id: string;
+    id?: string;
     destino: string;
     comunaDestino: string;
     fecha: Date;
