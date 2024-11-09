@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
+import { Geolocation } from "@capacitor/geolocation";
 import { LoadingController, NavController, ToastController, ToastOptions, AlertController, AlertOptions } from '@ionic/angular';
 
 @Injectable({
@@ -54,5 +55,17 @@ export class UtilsService {
 
   retrieveRouterEvents() {
     return this.router.events;
+  }
+
+  getCurrentPosition(){
+    return Geolocation.getCurrentPosition();
+  }
+
+  checkPermissions(){
+    return Geolocation.checkPermissions();
+  }
+
+  requestPermissions(){
+    return Geolocation.requestPermissions();
   }
 }
