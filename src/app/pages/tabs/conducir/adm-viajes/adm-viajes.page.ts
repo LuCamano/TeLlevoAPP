@@ -50,7 +50,7 @@ export class AdmViajesPage implements OnInit {
           'line-cap': 'round'
         },
         paint: {
-          'line-color': '#3887be',
+          'line-color': '#36c6ff',
           'line-width': 8
         }
       });
@@ -75,12 +75,14 @@ export class AdmViajesPage implements OnInit {
         pitch: 40,
         bearing: -17
       });
-      //Agregar el marcador para la ubicación actual
-      new mapboxgl.Marker().setLngLat([coords.longitude, coords.latitude]).addTo(this.map);
       
-      this.map.resize();
+      this.map.on('load', () => {
+        this.map.resize();
+        const inicio: [number,number] = [coords.longitude, coords.latitude];
+        const fin: [number,number] = [-73.06168796446508,-36.734805102675274];
 
-      return this.obtenerRuta([coords.longitude, coords.latitude], [-73.10885995425409, -36.73195425126108]);
+        this.obtenerRuta(inicio, fin);
+      });
     } catch (error) {
       return this.utils.navigateBack();
     }
