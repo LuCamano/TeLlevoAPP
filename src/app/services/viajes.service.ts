@@ -24,7 +24,7 @@ export class ViajesService {
     }
   }
 
-  getViajes(opts?: IViajesOpts): Observable<Viaje[]> {
+  getViajes(opts?: IViajesOpts[]): Observable<Viaje[]> {
     try {
       // Obtener los viajes de la base de datos
       let viajes$ = (opts ? this.authSvc.getCollection('viajes', opts) : this.authSvc.getCollection('viajes')) as Observable<Viaje[]>;
