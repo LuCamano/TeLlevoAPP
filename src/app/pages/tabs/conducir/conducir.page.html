@@ -1,14 +1,11 @@
 <app-encabezado titulo="Conducir" [shouldGoBack]="true" defaultHref="/tabs"></app-encabezado>
 
 <ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Publica tu vieje</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-button routerDirection="forward" routerLink="crear-viajes" expand="block">Publicar</ion-button>
-    </ion-card-content>
-  </ion-card>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/conducir/crear-viajes" routerDirection="forward">
+      <ion-icon name="car"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
   <ion-card>
     <ion-card-header>
       <ion-card-title>Administra tu viaje</ion-card-title>
@@ -20,15 +17,39 @@
   <ion-card>
     <ion-card-header>
       <ion-card-title>Historial de viajes</ion-card-title>
+      <ion-card-subtitle>(Pulse un viaje para ver los detalles)</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
       <ion-list>
-        <ion-item *ngFor="let viaje of viajes">
-          <ion-label>{{ viaje.fecha| date: 'dd/MM/yyyy HH:mm' }}</ion-label>
-          <ion-label>{{ viaje.distancia }} km</ion-label>
+        <ion-list-header>
+          <ion-label>Fecha</ion-label>
+          <ion-label>Destino</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let viaje of viajes" button>
+          <ion-label>{{ viaje.fecha | date: 'dd/MM/yyyy HH:mm' }}</ion-label>
           <ion-label>{{ viaje.destino }}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="viajes.length === 0 && isLoading">
+          <ion-label><ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text></ion-label>
+          <ion-label><ion-skeleton-text [animated]="true" style="width: 50%;"></ion-skeleton-text></ion-label>
+        </ion-item>
+        <ion-item *ngIf="viajes.length === 0 && !isLoading">
+          <ion-label>No has creado ningún viaje</ion-label>
         </ion-item>
       </ion-list>
     </ion-card-content>
   </ion-card>
+  <!-- Pruebas -->
+  <!-- <ion-card>
+    <ion-card-header>
+      <ion-card-title>Pruebas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let vPrueba of vPruebas" button (click)="unirseAlViaje(vPrueba)">
+          <ion-label>{{vPrueba.modeloAuto}}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card> -->
 </ion-content>

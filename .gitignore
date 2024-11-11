@@ -68,6 +68,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-# Android project files
-/android
