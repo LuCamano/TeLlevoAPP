@@ -65,13 +65,14 @@ export class AuthService {
     return addDoc(collection(this.ngFirestore.firestore, path), data);
   }
 
-  getCollection(path: string, opts?: ICollectionOpts) {
-    const { field, opStr, value } = opts || {};
-    let q;
-    if (field && opStr && value !== undefined) {
-        q = query(collection(this.ngFirestore.firestore, path), where(field, opStr, value));
-    } else {
-        q = query(collection(this.ngFirestore.firestore, path));
+  getCollection(path: string, opts?: ICollectionOpts[]) {
+    let q = query(collection(this.ngFirestore.firestore, path));
+    if (opts && opts.length > 0) {
+      opts.forEach( ({ field, opStr, value }) => {
+        if (field && opStr && value !== undefined) {
+          q = query(q, where(field, opStr, value));
+        }
+      });
     }
     return collectionData(q, { idField: 'id' });
   }
