@@ -1,9 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AlertController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
 import { UtilsService } from '../../../services/utils.service';
-import { Usuario } from 'src/app/models/models';
+import { Usuario, Viaje } from 'src/app/models/models';
+import { ViajesService } from 'src/app/services/viajes.service';
+
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.page.html',
@@ -14,20 +14,26 @@ export class PerfilPage implements OnInit {
   
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
+  private viajesSvc = inject(ViajesService);
 
   nombre!: string;
   apellido!: string;
   email!: string;
-  viajes = [
-    { id:'1',fecha: '2024-09-21', conductor: 'Juan Pérez', lugar: 'Santiago' },
-    { id:'2',fecha: '2024-09-22', conductor: 'María López', lugar: 'Valparaíso' },
-    { id:'3',fecha: '2024-09-23', conductor: 'Carlos Díaz', lugar: 'Concepción' }
-  ];
-
+  viajes: Viaje[] = []; 
+  
+  
   constructor() { }
 
   ngOnInit() {
-    
+    this.unirseAlViaje();
+    this.getViajesUser().subscribe(viajes => {
+      viajes.forEach(async viaje => {
+        let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
+        viaje.conductor = conductor.name;
+        this.viajes.push(viaje);
+      })
+      
+    });
   }
   
   ionViewWillEnter() {
@@ -46,5 +52,17 @@ export class PerfilPage implements OnInit {
       }
     
   }
+
+  getViajesUser() {
+    let uid = this.utils.getFromLocalStorage('user').uid;
+    return this.viajesSvc.getViajes({field: 'pasajeros', opStr: 'array-contains', value: uid});
+  }
+  
+
+  async unirseAlViaje() {
+    let viaje = await this.viajesSvc.getViaje('fqokgYQsksfSuiEE6wGG');
+    this.viajesSvc.unirseAlViaje(viaje);
+
+  } 
 
 }

@@ -34,10 +34,10 @@
     <ion-card-content>
       <ion-list>
         <ion-item *ngFor="let viaje of viajes">
-          <ion-label>{{viaje.fecha}}</ion-label>
+          <ion-label>{{viaje.fecha.toLocaleDateString()}}</ion-label>
           <ion-button id={{viaje.id}}>Ver detalles</ion-button>
-          <ion-alert trigger="{{viaje.id}}" header="viaje el {{viaje.fecha}}"
-            subHeader="nombre del conductor:{{viaje.conductor}}" message="ubicación: {{viaje.lugar}}"
+          <ion-alert trigger="{{viaje.id}}" header="viaje el {{viaje.fecha.toLocaleDateString('es-ES',{ day: '2-digit', month: 'long', year: 'numeric' })}}"
+            subHeader="nombre del conductor:{{viaje.conductor}}" message="ubicación: {{viaje.destino}}"
             [buttons]="['ok']"></ion-alert>
         </ion-item>
       </ion-list>
