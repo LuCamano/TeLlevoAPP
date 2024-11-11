@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import { Geolocation } from "@capacitor/geolocation";
+import { Geolocation, PositionOptions, WatchPositionCallback } from "@capacitor/geolocation";
 import { LoadingController, NavController, ToastController, ToastOptions, AlertController, AlertOptions } from '@ionic/angular';
 
 @Injectable({
@@ -67,5 +67,9 @@ export class UtilsService {
 
   requestPermissions(){
     return Geolocation.requestPermissions();
+  }
+
+  watchPosition(opts: PositionOptions, callback: WatchPositionCallback){
+    return Geolocation.watchPosition(opts, callback);
   }
 }

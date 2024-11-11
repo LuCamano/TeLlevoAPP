@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import mapboxgl from 'mapbox-gl';
+import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
-import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-adm-viajes',
@@ -9,82 +8,47 @@ import { environment } from 'src/environments/environment.prod';
   styleUrls: ['./adm-viajes.page.scss'],
 })
 export class AdmViajesPage implements OnInit {
-  // Inyectar servicios
   private utils = inject(UtilsService);
+  private mapbox = inject(MapboxService);
 
   map!: mapboxgl.Map;
-
-  constructor() {
-    mapboxgl.accessToken = environment.MAPBOX_TOKEN;
-  }
+  currentMarker!: mapboxgl.Marker;
 
   ionViewWillEnter() {
-    if (!this.map) this.buildMap();
+    this.buildMap();
   }
 
   ngOnInit() {
   }
 
-  obtenerRuta(start: [number, number], end: [number, number]) {
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
-    fetch(url)
-    .then( response => response.json())
-    .then( data => {
-      console.log(data);
-      this.map.addLayer({
-        id: 'route',
-        type: 'line',
-        source: {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: data.routes[0].geometry.coordinates
-            }
-          }
-        },
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#36c6ff',
-          'line-width': 8
-        }
-      });
-    });
-  }
-
   async buildMap() {
     try {
-      try {
-        await this.utils.checkPermissions();
-      } catch (error) {
-        await this.utils.requestPermissions();
-      }
-      //Obtener las coordenadas actuales
-      const coords = (await this.utils.getCurrentPosition()).coords;
-      //Crear el mapa
-      this.map = new mapboxgl.Map({
-        container: 'mapa',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [coords.longitude, coords.latitude],
-        zoom: 17,
-        pitch: 40,
-        bearing: -17
+      // Obtener coordenadas actuales
+      const { latitude, longitude } = (await this.utils.getCurrentPosition()).coords;
+      // Crear el mapa
+      const mapa = await this.mapbox.buildMap( map1 => {
+        // Cargar la ruta al iniciar el mapa
+        this.mapbox.obtenerRuta(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
       });
-      
-      this.map.on('load', () => {
-        this.map.resize();
-        const inicio: [number,number] = [coords.longitude, coords.latitude];
-        const fin: [number,number] = [-73.06168796446508,-36.734805102675274];
+      // Asignar el mapa a la propiedad
+      this.map = mapa;
 
-        this.obtenerRuta(inicio, fin);
+      // Crear marcador para la posición actual
+      this.currentMarker = this.mapbox.crearMarcador(mapa, [longitude, latitude], { element: this.mapbox.crearElementoMarcadorAuto(), pitchAlignment: 'auto', draggable: false });
+
+      // Actualizar la posición del marcador
+      this.utils.watchPosition({}, position => {
+        const { latitude, longitude } = position!.coords;
+        this.currentMarker.setLngLat([longitude, latitude]);
+        this.map.flyTo({ center: [longitude, latitude], pitch: this.map.getPitch(), bearing: this.map.getBearing() });
       });
+
     } catch (error) {
-      return this.utils.navigateBack();
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al construir el mapa',
+        duration: 2000
+      });
     }
   }
 }
