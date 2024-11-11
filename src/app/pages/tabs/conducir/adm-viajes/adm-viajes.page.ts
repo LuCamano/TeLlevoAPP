@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import * as mapboxgl from 'mapbox-gl';
+import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
-import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-adm-viajes',
@@ -9,17 +8,14 @@ import { environment } from 'src/environments/environment.prod';
   styleUrls: ['./adm-viajes.page.scss'],
 })
 export class AdmViajesPage implements OnInit {
-  // Inyectar servicios
   private utils = inject(UtilsService);
+  private mapbox = inject(MapboxService);
 
   map!: mapboxgl.Map;
-
-  constructor() {
-    (mapboxgl as any).accessToken = environment.MAPBOX_TOKEN;
-  }
+  currentMarker!: mapboxgl.Marker;
 
   ionViewWillEnter() {
-    if (!this.map) this.buildMap();
+    this.buildMap();
   }
 
   ngOnInit() {
@@ -27,22 +23,32 @@ export class AdmViajesPage implements OnInit {
 
   async buildMap() {
     try {
-      try {
-        await this.utils.checkPermissions();
-      } catch (error) {
-        await this.utils.requestPermissions();
-      }
-
-      const coords = (await this.utils.getCurrentPosition()).coords;
-      this.map = new mapboxgl.Map({
-        container: 'mapa',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [coords.longitude, coords.latitude],
-        zoom: 12
+      // Obtener coordenadas actuales
+      const { latitude, longitude } = (await this.utils.getCurrentPosition()).coords;
+      // Crear el mapa
+      const mapa = await this.mapbox.buildMap( map1 => {
+        // Cargar la ruta al iniciar el mapa
+        this.mapbox.obtenerRuta(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
       });
-      this.map.resize();
+      // Asignar el mapa a la propiedad
+      this.map = mapa;
+
+      // Crear marcador para la posición actual
+      this.currentMarker = this.mapbox.crearMarcador(mapa, [longitude, latitude], { element: this.mapbox.crearElementoMarcadorAuto(), pitchAlignment: 'auto', draggable: false });
+
+      // Actualizar la posición del marcador
+      this.utils.watchPosition({}, position => {
+        const { latitude, longitude } = position!.coords;
+        this.currentMarker.setLngLat([longitude, latitude]);
+        this.map.flyTo({ center: [longitude, latitude], pitch: this.map.getPitch(), bearing: this.map.getBearing() });
+      });
+
     } catch (error) {
-      this.utils.navigateBack();
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al construir el mapa',
+        duration: 2000
+      });
     }
   }
 }

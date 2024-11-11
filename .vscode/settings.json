@@ -4,6 +4,8 @@
     "@ionic/angular/standalone"
   ],
   "cSpell.words": [
-    "firestore"
+    "firestore",
+    "mapbox",
+    "MAPBOX"
   ]
 }
