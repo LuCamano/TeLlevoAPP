@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertButton } from '@ionic/angular';
+import { AlertButton, Platform } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
 import { UtilsService } from './services/utils.service';
 import { Usuario } from './models/models';
+import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -27,7 +28,8 @@ export class AppComponent {
     }
   ]
 
-  constructor(private router: Router, private authSvc: AuthService, private utils: UtilsService) {
+  constructor(private router: Router, private authSvc: AuthService, private utils: UtilsService, private platform: Platform, private screenOrientation: ScreenOrientation) {
+    this.initilizeApp();
     router.events.subscribe(val => {
       this.isValidUser = !this.router.url.includes('/login');
     });
@@ -46,5 +48,11 @@ export class AppComponent {
   
   logout() {
     this.authSvc.signOut();
+  }
+
+  initilizeApp() {
+    this.platform.ready().then(() => {
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    });
   }
 }
