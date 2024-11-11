@@ -26,11 +26,12 @@ export class PerfilPage implements OnInit {
 
   ngOnInit() {
     this.unirseAlViaje();
-    this.getViajesUser().subscribe(viajes => {
+    let sub = this.getViajesUser().subscribe(viajes => {
       viajes.forEach(async viaje => {
         let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
         viaje.conductor = conductor.name;
         this.viajes.push(viaje);
+        sub.unsubscribe();
       })
       
     });
@@ -55,7 +56,7 @@ export class PerfilPage implements OnInit {
 
   getViajesUser() {
     let uid = this.utils.getFromLocalStorage('user').uid;
-    return this.viajesSvc.getViajes({field: 'pasajeros', opStr: 'array-contains', value: uid});
+    return this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
   }
   
 
@@ -64,5 +65,6 @@ export class PerfilPage implements OnInit {
     this.viajesSvc.unirseAlViaje(viaje);
 
   } 
+  
 
 }
