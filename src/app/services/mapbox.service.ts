@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import { UtilsService } from './utils.service';
 import { environment } from 'src/environments/environment.prod';
+import { IDireccion } from '../interfaces/varios';
 
 @Injectable({
   providedIn: 'root'
@@ -98,5 +99,11 @@ export class MapboxService {
     elemento.style.height = '32px';
     elemento.style.backgroundSize = '100%';
     return elemento;
+  }
+
+  buscarDireccion(direccion: string) {
+    const url = mapboxgl.baseApiUrl + `/geocoding/v5/mapbox.places/${direccion}.json?access_token=${mapboxgl.accessToken}`;
+    return fetch(url)
+    .then(response => response.json()) as Promise<IDireccion>;
   }
 }
