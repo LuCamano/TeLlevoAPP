@@ -15,5 +15,5 @@ export interface Viaje {
     modeloAuto: string;
     patenteAuto: string;
     pasajeros: string[];
-    estado: 'disponible' | 'cancelado' | 'finalizado' | 'iniciado' | 'pendiente' | 'lleno';
+    estado: 'disponible' | 'cancelado' | 'finalizado' | 'iniciado' | 'pendiente' | 'lleno' | 'partiendo';
 }
