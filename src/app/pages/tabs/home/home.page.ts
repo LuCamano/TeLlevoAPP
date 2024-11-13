@@ -18,6 +18,7 @@ export class HomePage implements OnInit {
   private utils = inject(UtilsService);
   private viajesSvc = inject(ViajesService);
 
+
   nombre!: string;
   viajes: Viaje[] = []; 
   
@@ -25,7 +26,6 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.authSvc.getAuthIns().onAuthStateChanged( user => {
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
-
       if(userLocal) {
         this.nombre = userLocal.name
       } else {
@@ -71,6 +71,7 @@ export class HomePage implements OnInit {
     }
     
     getViajesUser() {
+      this.viajes = [];
       return this.viajesSvc.getViajes([{field: 'estado', opStr: '==', value: 'disponible'}]);
     }
     
