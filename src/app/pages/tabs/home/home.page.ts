@@ -55,9 +55,7 @@ export class HomePage implements OnInit {
           text: 'Aceptar',
           role: 'ok',
           handler: () => {
-            
               this.unirseAlViaje(viaje);
-              
             }
           }
         ]
@@ -65,7 +63,7 @@ export class HomePage implements OnInit {
     }
     
     getViajesUser() {
-      let sub = this.viajesSvc.getViajes([{field: 'estado', opStr: '==', value: 'disponible'}]).subscribe(async viajes => {
+      let sub = this.viajesSvc.getViajes([{field: 'estado', opStr: '==', value: 'disponible'},{field:'conductor' , opStr: '!=', value: this.utils.getFromLocalStorage('user').uid }]).subscribe(async viajes => {
         let nuevosViajes: Viaje[] = []; 
         await viajes.forEach(async viaje => {
           let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
@@ -76,8 +74,7 @@ export class HomePage implements OnInit {
         sub.unsubscribe();
       });
     }
-
-    
+ 
   async unirseAlViaje(via: Viaje) {
     try {
       await this.viajesSvc.unirseAlViaje(via);
@@ -88,7 +85,7 @@ export class HomePage implements OnInit {
       }).then(alert => {
         alert.present();
       })
-
+      this.getViajesUser();
     } catch (error) {
       this.utils.presentToast({
         message: 'ya te encuentras en el viaje',
@@ -96,9 +93,7 @@ export class HomePage implements OnInit {
         duration: 2500
       });
       console.error('Error al unirse al viaje:', error);
-
     }
-
   }
 
 }
