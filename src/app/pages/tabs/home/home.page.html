@@ -4,6 +4,32 @@
     <h1>Bienvenido, {{nombre}}</h1>
     <h4>Viajes disponibles:</h4>
   </ion-text>
+  @for (viaje2 of viajes2; track $index) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{viaje2.conductor}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>  
+            <ion-label>Destino: {{viaje2.destino}}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Fecha: {{viaje2.fecha | date: 'dd/MM/yyyy HH:mm'}}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Costo: {{viaje2.precio}}</ion-label>
+          </ion-item>  
+          <ion-item>
+            <ion-label>Asientos disponibles: {{viaje2.pasajeros ? viaje2.asientos - viaje2.pasajeros.length : viaje2.asientos}}</ion-label>
+          </ion-item>
+          <ion-item>
+            
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  }       
   @for (viaje of viajes; track $index) {
     <ion-card>
       <ion-card-header>

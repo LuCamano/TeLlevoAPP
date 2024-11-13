@@ -21,7 +21,7 @@ export class HomePage implements OnInit {
 
   nombre!: string;
   viajes: Viaje[] = []; 
-  
+  viajes2: Viaje[] = []; 
 
   ngOnInit() {
     
@@ -33,6 +33,15 @@ export class HomePage implements OnInit {
         viaje.conductor = conductor.name;
         this.viajes.push(viaje);
         sub.unsubscribe();
+      })
+      
+    });
+    let sub2 = this.getViajesActivos().subscribe(viajes2 => {
+      viajes2.forEach(async viaje => {
+        let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
+        viaje.conductor = conductor.name;
+        this.viajes.push(viaje);
+        sub2.unsubscribe();
       })
       
     });
@@ -75,7 +84,10 @@ export class HomePage implements OnInit {
       this.viajes = [];
       return this.viajesSvc.getViajes([{field: 'estado', opStr: '==', value: 'disponible'}]);
     }
-    
+    getViajesActivos() {
+      this.viajes2 = [];
+      return this.viajesSvc.getViajes([{field: 'estado', opStr: 'in', value: ['disponible', 'lleno']}, {field: 'pasajeros', opStr: 'array-contains', value: this.utils.getFromLocalStorage('user').uid}]);
+    }
     
   async unirseAlViaje(via: Viaje) {
     try {
@@ -99,4 +111,5 @@ export class HomePage implements OnInit {
     }
 
   }
+
 }
