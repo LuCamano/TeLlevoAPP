@@ -24,17 +24,7 @@ export class HomePage implements OnInit {
   
 
   ngOnInit() {
-    this.authSvc.getAuthIns().onAuthStateChanged( user => {
-      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
-      if(userLocal) {
-        this.nombre = userLocal.name
-      } else {
-        this.authSvc.getCurrentUserData().then( usr => {
-          if (usr) this.nombre = usr.name;
-          else this.nombre = '';
-        });
-      }
-    })
+    
   }
   ionViewWillEnter() {
     let sub = this.getViajesUser().subscribe(viajes => {
@@ -46,6 +36,17 @@ export class HomePage implements OnInit {
       })
       
     });
+    this.authSvc.getAuthIns().onAuthStateChanged( user => {
+      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
+      if(userLocal) {
+        this.nombre = userLocal.name
+      } else {
+        this.authSvc.getCurrentUserData().then( usr => {
+          if (usr) this.nombre = usr.name;
+          else this.nombre = '';
+        });
+      }
+    })
   }
 
   solitcitarViaje(viaje: Viaje) {
