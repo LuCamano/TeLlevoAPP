@@ -72,4 +72,8 @@ export class UtilsService {
   watchPosition(opts: PositionOptions, callback: WatchPositionCallback){
     return Geolocation.watchPosition(opts, callback);
   }
+
+  clearWatch(id: string){
+    return Geolocation.clearWatch({id});
+  }
 }

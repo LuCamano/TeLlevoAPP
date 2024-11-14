@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
-import { Viaje } from '../models/models';
-import { map, Observable } from 'rxjs';
+import { Solicitud, Usuario, Viaje } from '../models/models';
+import { lastValueFrom, map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
 
@@ -68,20 +68,96 @@ export class ViajesService {
 
   async unirseAlViaje(viaje: Viaje){
     try {
-      // Unirse a un viaje
-      let uid = this.utils.getFromLocalStorage('user').uid as string;
+      return await this.solicitarUnirseAlViaje(viaje);
+    } catch (error) {
+      console.error('Error al enviar solicitud:', error);
+      throw error;
+    }
+  }
+
+  async solicitarUnirseAlViaje(viaje: Viaje) {
+    if (!viaje.id) throw new Error('No se ha especificado el viaje');
+    try {
+      // Crear la solicitud
+      const {uid, name, lastName} = (this.utils.getFromLocalStorage('user') as Usuario);
+      let solicitud: Solicitud = {
+        uidPasajero: uid,
+        pasajero: `${name} ${lastName}`,
+        estado: 'PENDIENTE'
+      };
+      return await this.authSvc.addDocument(`viajes/${viaje.id}/solicitudes`, solicitud);
+    } catch (error) {
+      console.error('Error al solicitar unirse al viaje:', error);
+      throw error;
+    }
+  }
+
+  async aceptarSolicitud(solicitud: Solicitud, viaje: Viaje){
+    try {
+      const uid = solicitud.uidPasajero;
       if (viaje.pasajeros) {
-
-        if (viaje.pasajeros.includes(uid)) throw new Error('Ya te encuentras en el viaje');
-        else viaje.pasajeros.push(uid);
-
+        viaje.pasajeros.push(uid);
       } else {
         viaje.pasajeros = [uid];
       }
+      solicitud.estado = 'ACEPTADA';
       return await this.actualizarViaje(viaje);
     } catch (error) {
-      console.error('Error al unirse al viaje:', error);
+      console.error('Error al aceptar la solicitud:', error);
       throw error;
     }
+  }
+
+  async rechazarSolicitud(solicitud: Solicitud, viaje: Viaje){
+    try {
+      solicitud.estado = 'RECHAZADA';
+      let soliOut = { ...solicitud };
+      delete soliOut.id;
+      return await this.authSvc.setDocument(`viajes/${viaje.id}/solicitudes/${solicitud.id}`, soliOut);
+    } catch (error) {
+      console.error('Error al rechazar la solicitud:', error);
+      throw error;
+    }
+  }
+
+  revisarSiHayViajeEnCurso(uid: string){
+    let asPasajero = this.getViajes([
+      {
+        field: 'pasajeros',
+        opStr: 'array-contains',
+        value: uid
+      },
+      {
+        field: 'estado',
+        opStr: 'in',
+        value: ['iniciado', 'preparándose', 'disponible']
+      }
+    ]).pipe(map( viajes => {
+      if (viajes.length > 0) {
+        return { status:true, viaje: viajes[0] };
+      } else { 
+        return { status:false };
+      }
+    }));
+    let asConductor = this.getViajes([
+      {
+        field: 'conductor',
+        opStr: '==',
+        value: uid
+      },
+      {
+        field: 'estado',
+        opStr: 'in',
+        value: ['iniciado', 'preparándose', 'disponible']
+      }
+    ]).pipe(map( viajes => {
+      if (viajes.length > 0) {
+        return { status:true, viaje: viajes[0] };
+      } else { 
+        return { status:false };
+      }
+    }));
+
+    return { asPasajero, asConductor };
   }
 }

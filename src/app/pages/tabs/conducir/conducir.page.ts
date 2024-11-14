@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Viaje } from 'src/app/models/models';
 import { UtilsService } from 'src/app/services/utils.service';
 import { ViajesService } from 'src/app/services/viajes.service';
@@ -17,18 +18,33 @@ export class ConducirPage implements OnInit {
 
   public isLoading = false;
 
+  private subViajes!: Subscription;
+
+  viajeEnCurso!: Viaje;
+  conduciendo = false;
+  dePasajero = false;
+
+  private subConductor!: Subscription;
+  private subPasajero!: Subscription;
+
   ngOnInit() {}
 
   ionViewWillEnter() {
     this.obtenerViajes();
-    // this.obtenerViajesPruebas();
+    this.comprobarViajeEnCurso();
+  }
+
+  ionViewWillLeave() {
+    if (this.subViajes) this.subViajes.unsubscribe();
+    if (this.subConductor) this.subConductor.unsubscribe();
+    if (this.subPasajero) this.subPasajero.unsubscribe();
   }
 
   obtenerViajes() {
     // Obtener los viajes del conductor
     this.isLoading = true;
     try {
-      let sub = this.viajesSvc
+      this.subViajes = this.viajesSvc
         .getViajes([
           {
             // Buscar el campo conductor
@@ -40,7 +56,6 @@ export class ConducirPage implements OnInit {
         ])
         .subscribe((listViajes) => {
           this.viajes = listViajes;
-          sub.unsubscribe();
           this.isLoading = false;
         });
     } catch (error) {
@@ -52,26 +67,16 @@ export class ConducirPage implements OnInit {
     }
   }
 
-  // Codigo para hacer pruebas
-  /* vPruebas: Viaje[] = [];
-
-  obtenerViajesPruebas() {
-    try {
-      let sub = this.viajesSvc.getViajes().subscribe( list => {
-        this.vPruebas = list;
-        sub.unsubscribe();
-      });
-    } catch (error) {
-      console.error('Error al obtener los viajes:', error);
-    }
+  comprobarViajeEnCurso() {
+    const uid = this.utils.getFromLocalStorage('user').uid;
+    const { asConductor, asPasajero } = this.viajesSvc.revisarSiHayViajeEnCurso(uid);
+    this.subConductor = asConductor.subscribe( resp => {
+      this.conduciendo = resp.status;
+      if (resp.status) this.viajeEnCurso = resp.viaje!;
+    });
+    this.subPasajero = asPasajero.subscribe( resp => {
+      this.dePasajero = resp.status;
+      if (resp.status) this.viajeEnCurso = resp.viaje!;
+    });
   }
-
-  unirseAlViaje(viaje: Viaje){
-    // Unirse al viaje
-    try {
-      this.viajesSvc.unirseAlViaje(viaje);
-    } catch (error) {
-      console.log("pasaron cositas");
-    }
-  } */
 }

@@ -14,8 +14,13 @@ export class AdmViajesPage implements OnInit {
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
 
+  private watchPosCallId!: string;
   ionViewWillEnter() {
     this.buildMap();
+  }
+
+  ionViewWillLeave() {
+    if (this.watchPosCallId) this.utils.clearWatch(this.watchPosCallId);
   }
 
   ngOnInit() {
@@ -28,21 +33,22 @@ export class AdmViajesPage implements OnInit {
       // Crear el mapa
       const mapa = await this.mapbox.buildMap( map1 => {
         // Cargar la ruta al iniciar el mapa
-        this.mapbox.obtenerRuta(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
+        // this.mapbox.obtenerRuta(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
+        this.mapbox.obtenerRutaConDirecciones(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
+
+        // Crear marcador para la posición actual
+        this.currentMarker = this.mapbox.crearMarcador(mapa, [longitude, latitude], { element: this.mapbox.crearElementoMarcadorAuto(), pitchAlignment: 'auto', draggable: false });
+  
+        // Actualizar la posición del marcador
+        this.utils.watchPosition({}, position => {
+          const { latitude, longitude } = position!.coords;
+          this.currentMarker.setLngLat([longitude, latitude]);
+          this.map.flyTo({ center: [longitude, latitude], pitch: this.map.getPitch(), bearing: this.map.getBearing() });
+        }).then( id => this.watchPosCallId = id );
       });
       // Asignar el mapa a la propiedad
       this.map = mapa;
-
-      // Crear marcador para la posición actual
-      this.currentMarker = this.mapbox.crearMarcador(mapa, [longitude, latitude], { element: this.mapbox.crearElementoMarcadorAuto(), pitchAlignment: 'auto', draggable: false });
-
-      // Actualizar la posición del marcador
-      this.utils.watchPosition({}, position => {
-        const { latitude, longitude } = position!.coords;
-        this.currentMarker.setLngLat([longitude, latitude]);
-        this.map.flyTo({ center: [longitude, latitude], pitch: this.map.getPitch(), bearing: this.map.getBearing() });
-      });
-
+      return;
     } catch (error) {
       this.utils.presentToast({
         color: 'danger',

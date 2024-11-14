@@ -3,6 +3,8 @@ import mapboxgl from 'mapbox-gl';
 import { UtilsService } from './utils.service';
 import { environment } from 'src/environments/environment.prod';
 import { IDireccion } from '../interfaces/varios';
+import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +41,10 @@ export class MapboxService {
           mapa.resize();
           onLoad(mapa);
         });
+      } else {
+        mapa.on('load', () => {
+          mapa.resize();
+        });
       }
       return mapa;
     } catch (error) {
@@ -47,7 +53,7 @@ export class MapboxService {
     }
   }
 
-  async obtenerRuta(mapa: mapboxgl.Map, start: [number, number], end: [number, number]) {
+/*   async obtenerRuta(mapa: mapboxgl.Map, start: [number, number], end: [number, number]) {
     // Url de la API de Mapbox
     const url = mapboxgl.baseApiUrl + `/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
     
@@ -85,6 +91,40 @@ export class MapboxService {
       console.error('Error al obtener la ruta:', error);
       throw error;
     }
+  } */
+
+  obtenerRutaConDirecciones(mapa: mapboxgl.Map, start: [number, number], end: [number, number]) {
+    const directions = new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      unit: 'metric',
+      profile: 'mapbox/driving',
+      interactive: false,
+      language: 'es-MX',
+      flyTo: false,
+      controls: {
+        inputs: false,
+        instructions: false,
+        profileSwitcher: false
+      }
+    })
+    .setOrigin(start)
+    .setDestination(end);
+    mapa.addControl(directions, 'top-left');
+  }
+
+  crearDirecciones() {
+    return new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      unit: 'metric',
+      profile: 'mapbox/driving',
+      interactive: true,
+      language: 'es-MX',
+      controls: {
+        inputs: true,
+        instructions: false,
+        profileSwitcher: false
+      }
+    });
   }
 
   crearMarcador(mapa: mapboxgl.Map, coords: [number, number], opts: mapboxgl.MarkerOptions) {
@@ -105,5 +145,11 @@ export class MapboxService {
     const url = mapboxgl.baseApiUrl + `/geocoding/v5/mapbox.places/${direccion}.json?access_token=${mapboxgl.accessToken}`;
     return fetch(url)
     .then(response => response.json()) as Promise<IDireccion>;
+  }
+
+  buscarDireccionConCoordenadas(coords: [number, number]) {
+    const url = mapboxgl.baseApiUrl + `/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?access_token=${mapboxgl.accessToken}`;
+    return fetch(url)
+    .then(response => response.json()).then((data: IDireccion)=> data.features[0].place_name );
   }
 }

@@ -1,3 +1,5 @@
+import { IDestino } from "../interfaces/varios";
+
 export interface Usuario {
     email: string;
     name: string;
@@ -6,8 +8,8 @@ export interface Usuario {
 }
 export interface Viaje {
     id?: string;
-    destino: string;
-    comunaDestino: string;
+    destino: IDestino;
+    origen: IDestino;
     fecha: Date;
     precio: number;
     asientos: number;
@@ -15,5 +17,12 @@ export interface Viaje {
     modeloAuto: string;
     patenteAuto: string;
     pasajeros: string[];
-    estado: 'disponible' | 'cancelado' | 'finalizado' | 'iniciado' | 'pendiente' | 'lleno' | 'partiendo';
+    estado: 'disponible' | 'cancelado' | 'finalizado' | 'iniciado' | 'pendiente' | 'lleno' | 'preparándose';
+}
+
+export interface Solicitud {
+    id?: string;
+    uidPasajero: string;
+    pasajero: string;
+    estado: 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA';
 }

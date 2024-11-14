@@ -52,3 +52,8 @@ export interface Properties {
   mapbox_id?: string;
   'override:postcode'?: string;
 }
+
+export interface IDestino {
+  coordinates: [lng: number, lat: number];
+  direccion: string;
+}
