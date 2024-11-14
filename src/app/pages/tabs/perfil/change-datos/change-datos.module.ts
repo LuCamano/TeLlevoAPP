@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { PerfilPageRoutingModule } from './perfil-routing.module';
+import { ChangeDatosPageRoutingModule } from './change-datos-routing.module';
 
-import { PerfilPage } from './perfil.page';
-import { ComponentsModule } from "../../../components/components.module";
+import { ChangeDatosPage } from './change-datos.page';
+import { ComponentsModule } from "../../../../components/components.module";
 import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
@@ -15,10 +15,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     FormsModule,
     IonicModule,
-    PerfilPageRoutingModule,
+    ComponentsModule,
     ReactiveFormsModule,
-    ComponentsModule
-],
-  declarations: [PerfilPage]
+    ChangeDatosPageRoutingModule
+  ],
+  declarations: [ChangeDatosPage]
 })
-export class PerfilPageModule {}
+export class ChangeDatosPageModule {}
