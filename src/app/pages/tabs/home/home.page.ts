@@ -21,7 +21,7 @@ export class HomePage implements OnInit {
 
   nombre!: string;
   viajes: Viaje[] = []; 
-  viajes2: Viaje[] = []; 
+  
 
   ngOnInit() {
     
