@@ -5,14 +5,20 @@
   <ion-fab vertical="top" horizontal="end" slot="fixed">
     <ion-fab-button>
       <ion-icon name="caret-back-circle-outline"></ion-icon>
-      <ion-badge color="tertiary" mode="ios" style="position: absolute; top: 5%; right: 5%;">42</ion-badge>
     </ion-fab-button>
     <ion-fab-list side="start">
       <ion-fab-button (click)="solicitudesModal = true"><ion-icon name="clipboard-outline"></ion-icon></ion-fab-button>
       <ion-fab-button (click)="mensajesModal = true"><ion-icon name="chatbox-ellipses-outline"></ion-icon></ion-fab-button>
     </ion-fab-list>
   </ion-fab>
-
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="danger">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-fab-button color="danger" (click)="terminarViaje()"><ion-icon name="power-outline"></ion-icon></ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
   <div id="map-container">
     <div class="map" id="mapa" tabindex="0"></div>
   </div>

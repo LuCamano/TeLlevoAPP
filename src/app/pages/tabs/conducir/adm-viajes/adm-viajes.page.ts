@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Solicitud, Viaje } from 'src/app/models/models';
 import { MapboxService } from 'src/app/services/mapbox.service';
@@ -14,6 +15,7 @@ export class AdmViajesPage implements OnInit {
   private utils = inject(UtilsService);
   private mapbox = inject(MapboxService);
   private viajesSvc = inject(ViajesService);
+  private router = inject(Router);
 
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
@@ -37,6 +39,7 @@ export class AdmViajesPage implements OnInit {
   ionViewWillEnter() {
     this.buildMap();
     this.getSolicitudes();
+    this.obtenerViaje();
   }
 
   ionViewWillLeave() {
@@ -150,6 +153,26 @@ export class AdmViajesPage implements OnInit {
         message: 'Error al cancelar el viaje',
         duration: 2000
       });
+    }
+  }
+
+  terminarViaje() {
+    try {
+      if (this.viaje.estado === 'iniciado') this.viajesSvc.finalizarViaje(this.viaje);
+      else this.viajesSvc.cancelarViaje(this.viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al terminar el viaje',
+        duration: 2000
+      });
+    }
+  }
+
+  obtenerViaje() {
+    let xtras = this.router.getCurrentNavigation()?.extras.state;
+    if (xtras) {
+      this.viaje = xtras['viaje'];
     }
   }
 }
