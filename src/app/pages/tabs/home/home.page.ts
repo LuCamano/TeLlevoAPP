@@ -2,7 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from '../../../services/auth.service';
 import { UtilsService } from '../../../services/utils.service';
-import { Usuario } from 'src/app/models/models';
+import { Usuario, Viaje } from 'src/app/models/models';
+import { ViajesService } from 'src/app/services/viajes.service';
 
 @Component({
   selector: 'app-home',
@@ -15,21 +16,21 @@ export class HomePage implements OnInit {
   private alertController = inject(AlertController);
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
+  private viajesSvc = inject(ViajesService);
+
 
   nombre!: string;
-
-  viajes = [
-    { id: 1, hora: '16:00', conductor: 'Leandro', destino: 'Chiguayante', precio: 1000, asientosDisponibles: 3 },
-    { id: 2, hora: '17:00', conductor: 'Matías', destino: 'Concepción', precio: 800, asientosDisponibles: 4 },
-    { id: 3, hora: '18:00', conductor: 'José', destino: 'Talcahuano', precio: 1200, asientosDisponibles: 2 },
-    { id: 4, hora: '19:00', conductor: 'Sebastian', destino: 'Hualpén', precio: 1500, asientosDisponibles: 1 },
-    { id: 5, hora: '20:00', conductor: 'Nicolás', destino: 'San Pedro de la Paz', precio: 2000, asientosDisponibles: 5 }
-  ];
+  viajes: Viaje[] = []; 
+  viajes2: Viaje[] = []; 
 
   ngOnInit() {
+    
+  }
+  ionViewWillEnter() {
+    
+    this.getViajesUser();
     this.authSvc.getAuthIns().onAuthStateChanged( user => {
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
-
       if(userLocal) {
         this.nombre = userLocal.name
       } else {
@@ -41,10 +42,10 @@ export class HomePage implements OnInit {
     })
   }
 
-  solitcitarViaje(viaje: any) {
+  solitcitarViaje(viaje: Viaje) {
     this.alertController.create({
       header: 'Solicitar viaje',
-      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.hora} con destino a ${viaje.destino}?`,
+      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.fecha} con destino a ${viaje.destino}?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -54,16 +55,45 @@ export class HomePage implements OnInit {
           text: 'Aceptar',
           role: 'ok',
           handler: () => {
-            this.alertController.create({
-              header: 'Solicitud enviada',
-              message: `Tu solicitud para el viaje de las ${viaje.hora} con destino a ${viaje.destino} ha sido enviada con éxito.`,
-              buttons: ['Aceptar']
-            }).then(alert => {
-              alert.present();
-            })
+              this.unirseAlViaje(viaje);
+            }
           }
-        }
-      ]
-    }).then(alert => alert.present());
+        ]
+      }).then(alert => alert.present());
+    }
+    
+    getViajesUser() {
+      let sub = this.viajesSvc.getViajes([{field: 'estado', opStr: '==', value: 'disponible'},{field:'conductor' , opStr: '!=', value: this.utils.getFromLocalStorage('user').uid }]).subscribe(async viajes => {
+        let nuevosViajes: Viaje[] = []; 
+        await viajes.forEach(async viaje => {
+          let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
+          viaje.conductor = conductor.name;
+          nuevosViajes.push(viaje);
+        })
+        this.viajes = nuevosViajes;
+        sub.unsubscribe();
+      });
+    }
+ 
+  async unirseAlViaje(via: Viaje) {
+    try {
+      await this.viajesSvc.unirseAlViaje(via);
+      this.alertController.create({
+        header: 'Solicitud enviada',
+        message: `Tu solicitud para el viaje de las ${via.fecha} con destino a ${via.destino} ha sido enviada con éxito.`,
+        buttons: ['Aceptar']
+      }).then(alert => {
+        alert.present();
+      })
+      this.getViajesUser();
+    } catch (error) {
+      this.utils.presentToast({
+        message: 'ya te encuentras en el viaje',
+        color: 'danger',
+        duration: 2500
+      });
+      console.error('Error al unirse al viaje:', error);
+    }
   }
+
 }

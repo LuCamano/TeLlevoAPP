@@ -1,27 +1,38 @@
 <app-encabezado titulo="inicio"></app-encabezado>
 <ion-content class="ion-padding">
+  
   <ion-text>
     <h1>Bienvenido, {{nombre}}</h1>
+    <ion-card>
+      <ion-card-header>
+        <ion-row>
+          <ion-title >Tu viaje activo</ion-title>
+          <ion-button fill="clear">Unirse</ion-button>
+        </ion-row> 
+      </ion-card-header>
+    </ion-card>
+     
     <h4>Viajes disponibles:</h4>
-  </ion-text>
+  </ion-text> 
+
   @for (viaje of viajes; track $index) {
     <ion-card>
       <ion-card-header>
-        <ion-card-title>{{viaje.conductor}}</ion-card-title>
+        <ion-card-title>Destino: {{viaje.destino}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
           <ion-item>
-            <ion-label>Destino: {{viaje.destino}}</ion-label>
+            <ion-label>Conductor: {{viaje.conductor}}</ion-label>
           </ion-item>
           <ion-item>
-            <ion-label>Hora: {{viaje.hora}}</ion-label>
+            <ion-label>Fecha: {{viaje.fecha | date: 'dd/MM/yyyy HH:mm'}}</ion-label>
           </ion-item>
           <ion-item>
             <ion-label>Costo: {{viaje.precio}}</ion-label>
           </ion-item>
           <ion-item>
-            <ion-label>Asientos disponibles: {{viaje.asientosDisponibles}}</ion-label>
+            <ion-label>Asientos disponibles: {{viaje.pasajeros ? viaje.asientos - viaje.pasajeros.length : viaje.asientos}}</ion-label>
           </ion-item>
           <ion-item>
             <ion-button (click)="solitcitarViaje(viaje)">Solicitar viaje</ion-button>
