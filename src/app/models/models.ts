@@ -27,7 +27,7 @@ export interface Solicitud {
     estado: 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA';
 }
 
-export interface mensaje {
+export interface Mensaje {
     id?: string;
     mensaje: string;
     remitente: string;
