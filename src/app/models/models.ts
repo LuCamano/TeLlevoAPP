@@ -26,3 +26,9 @@ export interface Solicitud {
     pasajero: string;
     estado: 'PENDIENTE' | 'ACEPTADA' | 'RECHAZADA';
 }
+
+export interface mensaje {
+    id?: string;
+    mensaje: string;
+    remitente: string;
+}
