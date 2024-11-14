@@ -1,7 +1,84 @@
-<app-encabezado titulo="adm viajes" [shouldGoBack]="true" defaultHref="/conducir"></app-encabezado>
+<app-encabezado titulo="Viaje: {{viaje.estado}}" [shouldGoBack]="true" defaultHref="/conducir"></app-encabezado>
 
 <ion-content>
+  <!-- Botones para las solicitudes y mensajes -->
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="caret-back-circle-outline"></ion-icon>
+      <ion-badge color="tertiary" mode="ios" style="position: absolute; top: 5%; right: 5%;">42</ion-badge>
+    </ion-fab-button>
+    <ion-fab-list side="start">
+      <ion-fab-button (click)="solicitudesModal = true"><ion-icon name="clipboard-outline"></ion-icon></ion-fab-button>
+      <ion-fab-button (click)="mensajesModal = true"><ion-icon name="chatbox-ellipses-outline"></ion-icon></ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+
   <div id="map-container">
     <div class="map" id="mapa" tabindex="0"></div>
   </div>
+  <ion-modal [isOpen]="solicitudesModal" (willDismiss)="solicitudesModal = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="secondary">
+          <ion-title>Solicitudes</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="solicitudesModal = false">
+              Cerrar
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-card *ngFor="let solicitud of solicitudes">
+          <ion-card-content>
+            <ion-text color="tertiary">
+              <h5>{{solicitud.pasajero}}</h5>
+            </ion-text>
+            <ion-buttons slot="bottom">
+              <ion-button *ngIf="solicitud.estado === 'PENDIENTE'" color="success" fill="solid" expand="block" (click)="aceptarSolicitud(solicitud)">
+                Aceptar
+              </ion-button>
+              <ion-button *ngIf="solicitud.estado === 'PENDIENTE'" color="danger" fill="solid" expand="block" (click)="rechazarSolicitud(solicitud)">
+                Rechazar
+              </ion-button>
+            </ion-buttons>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+  <ion-modal [isOpen]="mensajesModal" (willDismiss)="mensajesModal = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="secondary">
+          <ion-title>Mensajes</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="mensajesModal = false">
+              Cerrar
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-card *ngFor="let mensaje of mensajes">
+          <ion-card-content>
+            <ion-text color="tertiary">
+              <h5>{{mensaje.remitente}}</h5>
+            </ion-text>
+            {{mensaje.mensaje}}
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+      <ion-footer class="ion-padding">
+        <ion-toolbar>
+          <ion-input type="text" placeholder="Escribir mensaje..." fill="outline"></ion-input>
+          <ion-buttons slot="end">
+            <ion-button shape="round" color="tertiary" expand="block" fill="solid">
+              <ion-icon slot="start" name="paper-plane-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
 </ion-content>

@@ -160,4 +160,50 @@ export class ViajesService {
 
     return { asPasajero, asConductor };
   }
+
+  getSolicitudes(viajeId: string) {
+    return this.authSvc.getCollection(`viajes/${viajeId}/solicitudes`) as Observable<Solicitud[]>;
+  }
+
+  iniciarViaje(viaje: Viaje){
+    try {
+      viaje.estado = 'iniciado';
+      return this.actualizarViaje(viaje);
+    } catch (error) {
+      console.error('Error al iniciar el viaje:', error);
+      throw error;
+    }
+  }
+
+  finalizarViaje(viaje: Viaje){
+    try {
+      viaje.estado = 'finalizado';
+      return this.actualizarViaje(viaje);
+    } catch (error) {
+      console.error('Error al finalizar el viaje:', error);
+      throw error;
+    }
+  }
+
+  async cancelarViaje(viaje: Viaje){
+    try {
+      viaje.estado = 'cancelado';
+      return await this.actualizarViaje(viaje);
+    } catch (error) {
+      console.error('Error al cancelar el viaje:', error);
+      throw error;
+    }
+  }
+
+  abandonarViaje(viaje: Viaje, uid: string){
+    try {
+      if (viaje.pasajeros) {
+        viaje.pasajeros = viaje.pasajeros.filter( pasajero => pasajero !== uid );
+      }
+      return this.actualizarViaje(viaje);
+    } catch (error) {
+      console.error('Error al abandonar el viaje:', error);
+      throw error;
+    }
+  }
 }

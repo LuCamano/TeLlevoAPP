@@ -1,6 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Solicitud, Viaje } from 'src/app/models/models';
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { ViajesService } from 'src/app/services/viajes.service';
 
 @Component({
   selector: 'app-adm-viajes',
@@ -10,17 +13,35 @@ import { UtilsService } from 'src/app/services/utils.service';
 export class AdmViajesPage implements OnInit {
   private utils = inject(UtilsService);
   private mapbox = inject(MapboxService);
+  private viajesSvc = inject(ViajesService);
 
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
 
+  solicitudesModal = false;
+  mensajesModal = false;
+
+  private subSolicitudes!: Subscription;
+
+  mensajes = [
+    { mensaje: "Hola", remitente:"Rodrigo" },
+    { mensaje: "Buenas tardes", remitente:"Alberto" },
+    { mensaje: "Adios", remitente: "Gabriela" }
+  ]
+
+  solicitudes:Solicitud[] = [];
+
+  viaje = {} as Viaje;
+
   private watchPosCallId!: string;
   ionViewWillEnter() {
     this.buildMap();
+    this.getSolicitudes();
   }
 
   ionViewWillLeave() {
     if (this.watchPosCallId) this.utils.clearWatch(this.watchPosCallId);
+    if (this.subSolicitudes) this.subSolicitudes.unsubscribe();
   }
 
   ngOnInit() {
@@ -53,6 +74,80 @@ export class AdmViajesPage implements OnInit {
       this.utils.presentToast({
         color: 'danger',
         message: 'Error al construir el mapa',
+        duration: 2000
+      });
+    }
+  }
+
+  getSolicitudes() {
+    try {
+      this.subSolicitudes = this.viajesSvc.getSolicitudes(this.viaje.id!).subscribe( solicitudes => {
+        this.solicitudes = solicitudes;
+      });
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al obtener las solicitudes',
+        duration: 2000
+      });
+    }
+  }
+
+  aceptarSolicitud(solicitud: Solicitud) {
+    try {
+      this.viajesSvc.aceptarSolicitud(solicitud, this.viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al aceptar la solicitud',
+        duration: 2000
+      });
+    }
+  }
+
+  rechazarSolicitud(solicitud: Solicitud) {
+    try {
+      this.viajesSvc.rechazarSolicitud(solicitud, this.viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al rechazar la solicitud',
+        duration: 2000
+      });
+    }
+  }
+
+  iniciarViaje() {
+    try {
+      this.viajesSvc.iniciarViaje(this.viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al iniciar el viaje',
+        duration: 2000
+      });
+    }
+  }
+
+  finalizarViaje() {
+    try {
+      this.viajesSvc.finalizarViaje(this.viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al finalizar el viaje',
+        duration: 2000
+      });
+    }
+  }
+
+  cancelarViaje() {
+    try {
+      this.viajesSvc.cancelarViaje(this.viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al cancelar el viaje',
         duration: 2000
       });
     }
