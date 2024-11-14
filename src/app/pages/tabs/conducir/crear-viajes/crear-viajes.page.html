@@ -5,17 +5,29 @@
     <ion-row>
       <ion-col sizeMd="6" offsetMd="3">
         <form #nuevoViajeForm="ngForm" (ngSubmit)="submit()">
+          <!-- Dirección de destino -->
+          <ion-button (click)="modalOpen = true" expand="block">
+            Elegir origen y destino
+          </ion-button>
+          <ion-text *ngIf="origenSelected || destinoSelected">
+            <p *ngIf="origenSelected">Origen seleccionado: {{origenSelected.direccion}}</p>
+            <p *ngIf="destinoSelected">Destino seleccionado: {{destinoSelected.direccion}}</p>
+          </ion-text>
+          <br>
+          <!-- Fecha y hora del viaje -->
+          <ion-label>Fecha del viaje</ion-label>
+          <ion-datetime-button datetime="selector-fecha" class="ion-margin-top"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime [(ngModel)]="viaje.fecha" name="fecha" id="selector-fecha" [min]="fechaMin" [max]="fechaMax" hourCycle="h23"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+          <br>
           <!-- Modelo del vehículo -->
           <ion-input [(ngModel)]="viaje.modeloAuto" name="modeloAuto" helperText="Ingrese el modelo del vehículo en el cual se realizará el viaje" errorText="Ingrese un modelo de vehículo" type="text" label="Modelo del vehículo" placeholder="Ford Territory..." labelPlacement="floating" fill="outline" required></ion-input>
           <br>
           <!-- Patente del vehículo -->
           <ion-input [(ngModel)]="viaje.patenteAuto" name="patenteAuto" helperText="Ingrese la patente del vehículo" errorText="Formato de patente no válido" type="text" label="Patente del vehículo" placeholder="BBCC12" labelPlacement="floating" fill="outline" pattern="[A-Z]{4}[0-9]{2}" (ionInput)="viaje.patenteAuto = viaje.patenteAuto.toUpperCase()" maxlength="6" required></ion-input>
-          <br>
-          <!-- Dirección de destino -->
-          <ion-input [(ngModel)]="viaje.destino" name="destino" helperText="Ingrese la dirección de destino" errorText="Ingrese una dirección" type="text" label="Dirección destino" placeholder="Calle 123..." labelPlacement="floating" fill="outline" required></ion-input>
-          <br>
-          <!-- Comuna de destino -->
-          <ion-input [(ngModel)]="viaje.comunaDestino" name="comunaDestino" helperText="Ingrese la comuna de destino" errorText="Ingrese una comuna" type="text" label="Comuna destino" placeholder="Talcahuano..." labelPlacement="floating" fill="outline" required></ion-input>
           <br>
           <!-- Cantidad de asientos -->
           <ion-input [(ngModel)]="viaje.asientos" name="asientos" helperText="Ingrese cantidad de asientos disponibles" errorText="Cantidad de asientos no válida" type="number" label="Cantidad de asientos" placeholder="3" min="1" labelPlacement="floating" fill="outline" (ionInput)="validarAsientos($event)" required></ion-input>
@@ -23,11 +35,28 @@
           <!-- Precio del viaje -->
           <ion-input [(ngModel)]="viaje.precio" name="precio" helperText="Ingrese el costo del viaje" errorText="Precio no válido" type="number" inputmode="numeric" label="Precio" placeholder="1.500" step="1" min="0" labelPlacement="floating" fill="outline" (ionInput)="validarPrecio($event)" required></ion-input>
           <br>
-          <ion-button type="submit" expand="block" [disabled]="nuevoViajeForm.invalid">
+          <ion-button type="submit" expand="block" [disabled]="nuevoViajeForm.invalid || !origenSelected || !destinoSelected">
             Crear
           </ion-button>
         </form>
       </ion-col>
     </ion-row>
   </ion-grid>
+  <ion-modal [isOpen]="modalOpen" (willDismiss)="modalDismiss()" (willPresent)="buildMap()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="light">
+          <ion-title>Seleccionar origen y destino</ion-title>
+          <ion-button slot="end" (click)="modalOpen = false" expand="block" fill="clear" >
+            Aceptar
+          </ion-button>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div id="map-container">
+          <div class="map" id="mapa" tabindex="0"></div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

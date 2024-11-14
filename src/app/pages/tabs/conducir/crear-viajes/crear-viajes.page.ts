@@ -1,5 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
+import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
+import { IDestino } from 'src/app/interfaces/varios';
 import { Viaje } from 'src/app/models/models';
+import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { ViajesService } from 'src/app/services/viajes.service';
 
@@ -12,10 +15,43 @@ export class CrearViajesPage implements OnInit {
   // Inyección de dependencias
   private viajesSvc = inject(ViajesService);
   private utils = inject(UtilsService);
+  private mapboxSvc = inject(MapboxService);
 
   viaje = {} as Viaje;
 
+  modalOpen = true;
+
+  fechaMin = new Date(Date.now()).toISOString();
+  fechaMax = new Date(Date.now() + 1000 * 60 * 60 * 24 * 2).toISOString();
+
+  map!: mapboxgl.Map;
+  direcciones!: MapboxDirections;
+
+  origenSelected!: IDestino;
+  destinoSelected!: IDestino;
+
   ngOnInit() {
+  }
+
+  async buildMap() {
+    if (!this.direcciones) this.direcciones = this.mapboxSvc.crearDirecciones();
+    this.map = await this.mapboxSvc.buildMap( mapa => {
+      mapa.addControl(this.direcciones, 'top-left');
+      if (this.origenSelected) this.direcciones.setOrigin(this.origenSelected.coordinates);
+      if (this.destinoSelected) this.direcciones.setDestination(this.destinoSelected.coordinates);
+      this.direcciones.on('origin', ev => {
+        const coords = ev.feature.geometry.coordinates;
+        this.mapboxSvc.buscarDireccionConCoordenadas(coords).then( direcc => {
+          this.origenSelected = { coordinates: coords, direccion: direcc };
+        });
+      });
+      this.direcciones.on('destination', ev => {
+        const coords = ev.feature.geometry.coordinates;
+        this.mapboxSvc.buscarDireccionConCoordenadas(coords).then( direcc => {
+          this.destinoSelected = { coordinates: coords, direccion: direcc };
+        });
+      });
+    });
   }
 
   validarPrecio(event: any){
@@ -26,11 +62,11 @@ export class CrearViajesPage implements OnInit {
     this.viaje.asientos = event.target.value.replace(/[^0-9]/g, '');
   }
 
-
   async submit(){
     this.viaje.estado = 'disponible';
     this.viaje.conductor = this.utils.getFromLocalStorage('user').uid;
-    this.viaje.fecha = new Date(Date.now());
+    this.viaje.origen = this.origenSelected;
+    this.viaje.destino = this.destinoSelected;
     console.log(this.viaje);
     const loading = await this.utils.presentLoading();
     loading.present();
@@ -54,5 +90,10 @@ export class CrearViajesPage implements OnInit {
     } finally {
       loading.dismiss();
     }
+  }
+
+  modalDismiss() {
+    this.modalOpen = false;
+    this.map.remove();
   }
 }
