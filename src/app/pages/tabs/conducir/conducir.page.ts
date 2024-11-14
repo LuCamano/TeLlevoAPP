@@ -79,4 +79,9 @@ export class ConducirPage implements OnInit {
       if (resp.status) this.viajeEnCurso = resp.viaje!;
     });
   }
+
+  irAlViajeActual() {
+    console.log('Viaje actual:', this.viajeEnCurso);
+    this.utils.navigateForwardto('/conducir/adm-viajes', { state: { viaje: this.viajeEnCurso } });
+  }
 }

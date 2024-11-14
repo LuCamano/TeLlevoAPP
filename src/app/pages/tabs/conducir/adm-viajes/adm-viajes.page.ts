@@ -37,9 +37,9 @@ export class AdmViajesPage implements OnInit {
 
   private watchPosCallId!: string;
   ionViewWillEnter() {
+    this.obtenerViaje();
     this.buildMap();
     this.getSolicitudes();
-    this.obtenerViaje();
   }
 
   ionViewWillLeave() {
@@ -58,10 +58,10 @@ export class AdmViajesPage implements OnInit {
       const mapa = await this.mapbox.buildMap( map1 => {
         // Cargar la ruta al iniciar el mapa
         // this.mapbox.obtenerRuta(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
-        this.mapbox.obtenerRutaConDirecciones(map1, [longitude, latitude], [-73.08966273403564, -36.76762960060227]);
+        this.mapbox.obtenerRutaConDirecciones(map1, this.viaje.origen.coordinates, this.viaje.destino.coordinates);
 
         // Crear marcador para la posición actual
-        this.currentMarker = this.mapbox.crearMarcador(mapa, [longitude, latitude], { element: this.mapbox.crearElementoMarcadorAuto(), pitchAlignment: 'auto', draggable: false });
+        this.currentMarker = this.mapbox.crearMarcador(mapa, this.viaje.origen.coordinates, { element: this.mapbox.crearElementoMarcadorAuto(), pitchAlignment: 'auto', draggable: false });
   
         // Actualizar la posición del marcador
         this.utils.watchPosition({}, position => {
@@ -169,7 +169,7 @@ export class AdmViajesPage implements OnInit {
     }
   }
 
-  obtenerViaje() {
+  async obtenerViaje() {
     let xtras = this.router.getCurrentNavigation()?.extras.state;
     if (xtras) {
       this.viaje = xtras['viaje'];
