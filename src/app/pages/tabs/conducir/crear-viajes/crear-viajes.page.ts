@@ -63,11 +63,11 @@ export class CrearViajesPage implements OnInit {
   }
 
   async submit(){
+    if (!this.viaje.fecha) this.viaje.fecha = new Date(Date.now());
     this.viaje.estado = 'disponible';
     this.viaje.conductor = this.utils.getFromLocalStorage('user').uid;
     this.viaje.origen = this.origenSelected;
     this.viaje.destino = this.destinoSelected;
-    console.log(this.viaje);
     const loading = await this.utils.presentLoading();
     loading.present();
     try {

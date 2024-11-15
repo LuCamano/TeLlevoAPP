@@ -7,7 +7,7 @@ export interface ICollectionOpts {
 }
 
 export interface IViajesOpts extends ICollectionOpts {
-    field: 'destino' | 'fecha' | 'precio' | 'asientos' | 'conductor' | 'estado' | 'modeloAuto' | 'patenteAuto' | 'comunaDestino' | 'pasajeros'
+    field: 'destino' | 'origen' | 'fecha' | 'precio' | 'asientos' | 'conductor' | 'estado' | 'modeloAuto' | 'patenteAuto' | 'pasajeros'
 }
 export interface IDireccion {
   type: string;

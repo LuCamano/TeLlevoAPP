@@ -20,7 +20,6 @@ export class ConducirPage implements OnInit {
 
   private subViajes!: Subscription;
 
-  viajeEnCurso!: Viaje;
   conduciendo = false;
   dePasajero = false;
 
@@ -72,16 +71,15 @@ export class ConducirPage implements OnInit {
     const { asConductor, asPasajero } = this.viajesSvc.revisarSiHayViajeEnCurso(uid);
     this.subConductor = asConductor.subscribe( resp => {
       this.conduciendo = resp.status;
-      if (resp.status) this.viajeEnCurso = resp.viaje!;
+      if (resp.status) {
+        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
+      };
     });
     this.subPasajero = asPasajero.subscribe( resp => {
       this.dePasajero = resp.status;
-      if (resp.status) this.viajeEnCurso = resp.viaje!;
+      if (resp.status) {
+        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
+      };
     });
-  }
-
-  irAlViajeActual() {
-    console.log('Viaje actual:', this.viajeEnCurso);
-    this.utils.navigateForwardto('/conducir/adm-viajes', { state: { viaje: this.viajeEnCurso } });
   }
 }
