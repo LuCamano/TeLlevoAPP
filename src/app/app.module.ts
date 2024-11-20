@@ -11,7 +11,6 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { AngularFirestoreModule } from "@angular/fire/compat/firestore";
 import { firebaseConfig } from '../environments/firebaseconfig';
-import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +22,7 @@ import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/n
     AngularFireAuthModule, 
     AngularFirestoreModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, ScreenOrientation],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

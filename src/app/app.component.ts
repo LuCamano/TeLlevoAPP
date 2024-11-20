@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertButton, Platform } from '@ionic/angular';
+import { AlertButton } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
 import { UtilsService } from './services/utils.service';
 import { Usuario } from './models/models';
-import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -28,7 +28,7 @@ export class AppComponent {
     }
   ]
 
-  constructor(private router: Router, private authSvc: AuthService, private utils: UtilsService, private platform: Platform, private screenOrientation: ScreenOrientation) {
+  constructor(private router: Router, private authSvc: AuthService, private utils: UtilsService) {
     this.initilizeApp();
     router.events.subscribe(val => {
       this.isValidUser = !this.router.url.includes('/login');
@@ -51,8 +51,10 @@ export class AppComponent {
   }
 
   initilizeApp() {
-    this.platform.ready().then(() => {
-      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+    ScreenOrientation.lock({ orientation: 'portrait' }).then(() => {
+      console.log('Pantalla bloqueada en modo vertical');
+    }).catch((error) => {
+      console.error('Error al bloquear la orientación:', error);
     });
   }
 }
