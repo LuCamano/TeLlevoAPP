@@ -10,7 +10,7 @@
   <ion-item *ngIf="conduciendo || dePasajero" lines="none" color="tertiary" class="viaje-en-curso">
     <ion-label slot="start">Tienes un viaje en curso</ion-label>
     <ion-button slot="end" color="success"
-      (click)="irAlViajeActual()">
+      routerDirection="forward" routerLink="adm-viajes">
       Ir al viaje
     </ion-button>
   </ion-item>

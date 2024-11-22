@@ -3,22 +3,21 @@
   
   <ion-text>
     <h1>Bienvenido, {{nombre}}</h1>
-    <ion-card>
-      <ion-card-header>
-        <ion-row>
-          <ion-title >Tu viaje activo</ion-title>
-          <ion-button fill="clear">Unirse</ion-button>
-        </ion-row> 
-      </ion-card-header>
-    </ion-card>
-     
+    <!-- Aviso de viaje disponible -->
+    <ion-item *ngIf="conduciendo || dePasajero" lines="none" color="tertiary" class="viaje-en-curso">
+      <ion-label slot="start">Tienes un viaje en curso</ion-label>
+      <ion-button slot="end" color="success"
+        routerDirection="forward" routerLink="/conducir/adm-viajes">
+        Ir al viaje
+      </ion-button>
+    </ion-item>
     <h4>Viajes disponibles:</h4>
   </ion-text> 
 
   @for (viaje of viajes; track $index) {
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Destino: {{viaje.destino}}</ion-card-title>
+        <ion-card-title>Destino: {{viaje.destino.direccion}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>

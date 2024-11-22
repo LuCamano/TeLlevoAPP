@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Solicitud, Viaje } from 'src/app/models/models';
 import { MapboxService } from 'src/app/services/mapbox.service';
@@ -15,7 +14,6 @@ export class AdmViajesPage implements OnInit {
   private utils = inject(UtilsService);
   private mapbox = inject(MapboxService);
   private viajesSvc = inject(ViajesService);
-  private router = inject(Router);
 
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
@@ -160,6 +158,8 @@ export class AdmViajesPage implements OnInit {
     try {
       if (this.viaje.estado === 'iniciado') this.viajesSvc.finalizarViaje(this.viaje);
       else this.viajesSvc.cancelarViaje(this.viaje);
+      localStorage.removeItem('viajeEnCurso');
+      this.utils.navigateBack();
     } catch (error) {
       this.utils.presentToast({
         color: 'danger',
@@ -170,9 +170,19 @@ export class AdmViajesPage implements OnInit {
   }
 
   async obtenerViaje() {
-    let xtras = this.router.getCurrentNavigation()?.extras.state;
-    if (xtras) {
-      this.viaje = xtras['viaje'];
+    try {
+      this.viaje = this.utils.getFromLocalStorage('viajeEnCurso') as Viaje;
+      if (!this.viaje) {
+        throw new Error('No hay un viaje en curso');
+      }
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error al obtener el viaje',
+        icon: 'alert-circle',
+        duration: 2000
+      });
+      this.utils.navigateBack();
     }
   }
 }

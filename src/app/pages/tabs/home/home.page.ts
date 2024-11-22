@@ -4,6 +4,7 @@ import { AuthService } from '../../../services/auth.service';
 import { UtilsService } from '../../../services/utils.service';
 import { Usuario, Viaje } from 'src/app/models/models';
 import { ViajesService } from 'src/app/services/viajes.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -22,12 +23,17 @@ export class HomePage implements OnInit {
   nombre!: string;
   viajes: Viaje[] = []; 
   
+  private subConductor!: Subscription;
+  private subPasajero!: Subscription;
+
+  conduciendo = false;
+  dePasajero = false;
 
   ngOnInit() {
     
   }
   ionViewWillEnter() {
-    
+    this.comprobarViajeEnCurso();
     this.getViajesUser();
     this.authSvc.getAuthIns().onAuthStateChanged( user => {
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
@@ -96,4 +102,20 @@ export class HomePage implements OnInit {
     }
   }
 
+  comprobarViajeEnCurso() {
+    const uid = this.utils.getFromLocalStorage('user').uid;
+    const { asConductor, asPasajero } = this.viajesSvc.revisarSiHayViajeEnCurso(uid);
+    this.subConductor = asConductor.subscribe( resp => {
+      this.conduciendo = resp.status;
+      if (resp.status) {
+        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
+      };
+    });
+    this.subPasajero = asPasajero.subscribe( resp => {
+      this.dePasajero = resp.status;
+      if (resp.status) {
+        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
+      };
+    });
+  }
 }

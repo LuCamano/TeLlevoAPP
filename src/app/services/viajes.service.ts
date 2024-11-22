@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Solicitud, Usuario, Viaje } from '../models/models';
-import { lastValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
 
@@ -66,6 +66,18 @@ export class ViajesService {
     }
   }
 
+  async actualizarSolicitud(solicitud:Solicitud, idViaje:string) {
+    try {
+      // Actualizar una solicitud en la base de datos
+      let nuevaSolicitud = { ...solicitud };
+      delete nuevaSolicitud.id;
+      return await this.authSvc.setDocument(`viajes/${idViaje}/solicitudes/${solicitud.id}`, nuevaSolicitud);
+    } catch (error) {
+      console.error('Error al actualizar la solicitud:', error);
+      throw error;
+    }
+  }
+
   async unirseAlViaje(viaje: Viaje){
     try {
       return await this.solicitarUnirseAlViaje(viaje);
@@ -101,7 +113,7 @@ export class ViajesService {
         viaje.pasajeros = [uid];
       }
       solicitud.estado = 'ACEPTADA';
-      return await this.actualizarViaje(viaje);
+      return await this.actualizarSolicitud(solicitud, viaje.id!);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
       throw error;
@@ -111,9 +123,7 @@ export class ViajesService {
   async rechazarSolicitud(solicitud: Solicitud, viaje: Viaje){
     try {
       solicitud.estado = 'RECHAZADA';
-      let soliOut = { ...solicitud };
-      delete soliOut.id;
-      return await this.authSvc.setDocument(`viajes/${viaje.id}/solicitudes/${solicitud.id}`, soliOut);
+      return await this.actualizarSolicitud(solicitud, viaje.id!);
     } catch (error) {
       console.error('Error al rechazar la solicitud:', error);
       throw error;
