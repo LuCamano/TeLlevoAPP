@@ -17,27 +17,32 @@ export class PerfilPage implements OnInit {
   private viajesSvc = inject(ViajesService);
 
   usuario = {} as Usuario;
-  viaje = {} as Viaje;
   viajes: Viaje[] = []; 
-  
+  mensaje = '';
   
   constructor() { }
 
   ngOnInit() {
-    let sub = this.getViajesUser().subscribe(viajes => {
-      viajes.forEach(async viaje => {
-        let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
-        viaje.conductor = conductor.name;
-        this.viajes.push(viaje);
-        sub.unsubscribe();
-      })
-      
-    });
+    if (this.getViajesUser()) {
+      let sub = this.getViajesUser().subscribe(viajes => {
+        viajes.forEach(async viaje => {
+          let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
+          viaje.conductor = conductor.name;
+          this.viajes.push(viaje);
+          sub.unsubscribe();
+        })
+      });
+    } else {
+      this.viajes = this.utils.getFromLocalStorage('viajesLocales');
+    }
   }
   
   ionViewWillEnter() {
-    
-      let userLocal:Usuario = this.utils.getFromLocalStorage('user');
+    this.datosLocalesUser(); 
+  }
+  
+  datosLocalesUser() {
+    let userLocal:Usuario = this.utils.getFromLocalStorage('user');
       if(userLocal) {
         this.usuario = userLocal 
       } else {
@@ -46,12 +51,12 @@ export class PerfilPage implements OnInit {
           else this.usuario = {email: '', name: '', lastName: '', uid: ''};
         });
       }
-  }
+  } 
+
 
   getViajesUser() {
-    let uid = this.utils.getFromLocalStorage('user').uid;
+    let uid = this.utils.getFromLocalStorage('user').uid;    
     return this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
   }
   
-
 }

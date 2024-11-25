@@ -30,7 +30,9 @@ export class HomePage implements OnInit {
   dePasajero = false;
 
   ngOnInit() {
-    
+    let uid = this.utils.getFromLocalStorage('user').uid;
+    let via = this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
+    this.utils.saveInLocalStorage('viajesLocales', via);
   }
   ionViewWillEnter() {
     this.comprobarViajeEnCurso();
