@@ -25,7 +25,6 @@ export class PerfilPage implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.unirseAlViaje();
     let sub = this.getViajesUser().subscribe(viajes => {
       viajes.forEach(async viaje => {
         let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
@@ -40,7 +39,6 @@ export class PerfilPage implements OnInit {
   ionViewWillEnter() {
     
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
-
       if(userLocal) {
         this.nombre = userLocal.name
         this.apellido = userLocal.lastName
@@ -51,20 +49,12 @@ export class PerfilPage implements OnInit {
           else this.nombre = '';
         });
       }
-    
   }
 
   getViajesUser() {
     let uid = this.utils.getFromLocalStorage('user').uid;
     return this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
   }
-  
-
-  async unirseAlViaje() {
-    let viaje = await this.viajesSvc.getViaje('fqokgYQsksfSuiEE6wGG');
-    this.viajesSvc.unirseAlViaje(viaje);
-
-  } 
   
 
 }
