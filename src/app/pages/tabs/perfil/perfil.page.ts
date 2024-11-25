@@ -22,23 +22,25 @@ export class PerfilPage implements OnInit {
   
   constructor() { }
 
-  ngOnInit() {
-    if (this.getViajesUser()) {
+  async ngOnInit() {
+    if ( await this.checkInternet() == true) {
       let sub = this.getViajesUser().subscribe(viajes => {
         viajes.forEach(async viaje => {
           let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
           viaje.conductor = conductor.name;
           this.viajes.push(viaje);
-          sub.unsubscribe();
+          
         })
+        sub.unsubscribe();
       });
     } else {
-      this.viajes = this.utils.getFromLocalStorage('viajesLocales');
+      this.datosLocalesViajes();
     }
   }
   
   ionViewWillEnter() {
-    this.datosLocalesUser(); 
+    this.datosLocalesUser();
+    
   }
   
   datosLocalesUser() {
@@ -53,10 +55,24 @@ export class PerfilPage implements OnInit {
       }
   } 
 
+  datosLocalesViajes() {
+    this.viajes = [];
+    let a = this.utils.getFromLocalStorage('viajesLocales');
+    this.viajes.push(a);
+  }
 
   getViajesUser() {
     let uid = this.utils.getFromLocalStorage('user').uid;    
     return this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
+  }
+
+  async checkInternet(): Promise<boolean> {
+    try {
+      const response = await fetch('https://example.com/ping', { method: 'HEAD', mode: 'no-cors' });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
   
 }

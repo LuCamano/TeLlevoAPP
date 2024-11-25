@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
 
   nombre!: string;
   viajes: Viaje[] = []; 
+  viajesLocales: Viaje[] = [];
   
   private subConductor!: Subscription;
   private subPasajero!: Subscription;
@@ -30,9 +31,14 @@ export class HomePage implements OnInit {
   dePasajero = false;
 
   ngOnInit() {
-    let uid = this.utils.getFromLocalStorage('user').uid;
-    let via = this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
-    this.utils.saveInLocalStorage('viajesLocales', via);
+    let sub = this.getViajesLocal().subscribe(viajes => {
+      viajes.forEach(async viaje => {
+        let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
+        viaje.conductor = conductor.name;
+        this.utils.saveInLocalStorage('viajesLocales', viaje);
+      })
+      sub.unsubscribe();
+    });
   }
   ionViewWillEnter() {
     this.comprobarViajeEnCurso();
@@ -48,6 +54,7 @@ export class HomePage implements OnInit {
         });
       }
     })
+    
   }
 
   solitcitarViaje(viaje: Viaje) {
@@ -119,5 +126,10 @@ export class HomePage implements OnInit {
         this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
       };
     });
+  }
+
+   getViajesLocal() {
+    let uid = this.utils.getFromLocalStorage('user').uid;    
+    return this.viajesSvc.getViajes([{field: 'pasajeros', opStr: 'array-contains', value: uid},{field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado']}]);
   }
 }
