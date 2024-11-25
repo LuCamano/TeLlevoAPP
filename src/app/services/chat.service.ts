@@ -13,28 +13,37 @@ export class ChatService {
 
   private authService = inject(AuthService);
   private utilsService = inject(UtilsService);
-  mensajes: Mensaje[] = [];
+  
 
-  async crearMensaje(mensa: Mensaje, idViaje: string){
+  async crearMensaje(mensa: Mensaje, idViaje: string) {
     try {
-      // Crear la tabla en la base de datos
-      if (mensa.id) delete mensa.id;
-      return await this.authService.addDocument(`viajes/${idViaje}/mensajes`, mensa);
+        mensa.timestamp = Date.now(); // Añadir marca de tiempo
+        if (mensa.id) delete mensa.id; // Eliminar `id` si está presente
+        return await this.authService.addDocument(`viajes/${idViaje}/mensajes`, mensa);
     } catch (error) {
-      console.error('Error al crear el mensaje:', error);
-      throw error;
+        console.error('Error al crear el mensaje:', error);
+        throw error;
     }
-  }
+}
 
-  getMensajes(idViaje: string){
+getMensajes(idViaje: string): Observable<Mensaje[]> {
+  return new Observable<Mensaje[]>((subscriber) => {
     try {
-      (this.authService.getCollection(`viajes/${idViaje}/mensajes`) as unknown as Observable<Mensaje[]>).subscribe( msgs => this.mensajes = msgs);
-      
+      (this.authService.getCollection(`viajes/${idViaje}/mensajes`) as Observable<Mensaje[]>).subscribe({
+        next: (msgs) => {
+          // Ordenar los mensajes por el campo 'timestamp'
+          const mensajesOrdenados = msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+          subscriber.next(mensajesOrdenados);
+        },
+        error: (error) => {
+          console.error('Error al obtener los mensajes:', error);
+          subscriber.error(error);
+        },
+      });
     } catch (error) {
-      console.error('Error al obtener los mensaje:', error);
-      throw error;
+      console.error('Error al obtener los mensajes2:', error);
+      subscriber.error(error);
     }
-    
-
-  }
+  });
+}
 }

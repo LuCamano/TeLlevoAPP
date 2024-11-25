@@ -1,9 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Solicitud, Viaje } from 'src/app/models/models';
+import { Component, inject, OnInit ,ViewChild} from '@angular/core';
+import { Subscription, Observable, map } from 'rxjs';
+import { Mensaje, Solicitud, Usuario, Viaje } from 'src/app/models/models';
+import { ChatService } from 'src/app/services/chat.service';
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
 import { ViajesService } from 'src/app/services/viajes.service';
+
 
 @Component({
   selector: 'app-adm-viajes',
@@ -11,35 +13,36 @@ import { ViajesService } from 'src/app/services/viajes.service';
   styleUrls: ['./adm-viajes.page.scss'],
 })
 export class AdmViajesPage implements OnInit {
+  @ViewChild("content") content: any;
+  
   private utils = inject(UtilsService);
   private mapbox = inject(MapboxService);
   private viajesSvc = inject(ViajesService);
-
+  private chatSvc = inject(ChatService);
+  
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
 
   solicitudesModal = false;
   mensajesModal = false;
-
+  
   private subSolicitudes!: Subscription;
 
-  mensajes = [
-    { mensaje: "Hola", remitente:"Rodrigo" },
-    { mensaje: "Buenas tardes", remitente:"Alberto" },
-    { mensaje: "Adios", remitente: "Gabriela" }
-  ]
-
+  constructor() { }
+  mensajes : Mensaje[] = [];
   solicitudes:Solicitud[] = [];
-
+  mens = {} as Mensaje;
+  
   viaje = {} as Viaje;
-
+  nuevoMensaje = '';
   private watchPosCallId!: string;
   ionViewWillEnter() {
     this.obtenerViaje();
     this.buildMap();
     this.getSolicitudes();
+    this.verMensajes();
   }
-
+  
   ionViewWillLeave() {
     if (this.watchPosCallId) this.utils.clearWatch(this.watchPosCallId);
     if (this.subSolicitudes) this.subSolicitudes.unsubscribe();
@@ -47,7 +50,46 @@ export class AdmViajesPage implements OnInit {
 
   ngOnInit() {
   }
+  verMensajes() {
+    this.chatSvc.getMensajes(this.viaje.id!).subscribe(
+        (msgs: Mensaje[]) => {
+            this.mensajes = msgs; // Mensajes ordenados por timestamp
+            setTimeout(() => this.scrollToBottom2(), 300);  // Retrasar el scroll
+        },
+        (error) => {
+            this.utils.presentToast({
+                color: 'danger',
+                message: 'Error al cargar los mensajes',
+                duration: 2000,
+            });
+            console.error('Error al obtener mensajes:', error);
+        }
+    );
+    this.scrollToBottom2();
+}
 
+enviarMensaje() {
+  let userLocal: Usuario = this.utils.getFromLocalStorage('user');
+  if (this.nuevoMensaje != '') {
+    this.mens.mensaje = this.nuevoMensaje;
+    this.mens.remitente = userLocal.name;
+    try {
+      this.chatSvc.crearMensaje(this.mens, this.viaje.id!);
+      
+      this.nuevoMensaje = '';
+    } catch (error) {
+      this.utils.presentToast({
+        color: 'danger',
+        message: 'Error:'+ error,
+        duration: 2000,
+    });
+    }
+  }
+  
+}
+scrollToBottom2(duration: number = 300): void {
+  this.content.scrollToBottom(duration); // Desplazamiento automático al fondo
+}
   async buildMap() {
     try {
       // Obtener coordenadas actuales
@@ -185,4 +227,6 @@ export class AdmViajesPage implements OnInit {
       this.utils.navigateBack();
     }
   }
+
+
 }
