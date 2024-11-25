@@ -14,7 +14,7 @@
   <!-- Botón para terminar el viaje -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button>
-      <ion-icon name="arrow-back-outline"></ion-icon>
+      <ion-icon name="settings-sharp"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="start">
       <ion-fab-button color="danger" (click)="terminarViaje()"><ion-icon name="power-outline"></ion-icon></ion-fab-button>
@@ -66,7 +66,7 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content #content id="mensajes-container" class="ion-padding">
+      <ion-content #mensajesContainer id="mensajes-container" class="ion-padding">
         <ion-card *ngFor="let mensaje of mensajes">
           <ion-card-header>
             <ion-card-subtitle> {{mensaje.remitente}} </ion-card-subtitle>
@@ -77,16 +77,17 @@
         </ion-card>
       </ion-content>
       <ion-footer class="ion-padding">
-        <ion-toolbar>
-
-          <ion-input type="text" placeholder="Escribir mensaje..." fill="outline" [(ngModel)]="nuevoMensaje"></ion-input>
-          <ion-buttons slot="end">
-            <ion-button shape="round" color="tertiary" expand="block" fill="solid" (click)="enviarMensaje()">
-
-              <ion-icon slot="start" name="paper-plane-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
+        <form #mensajeForm="ngForm" (ngSubmit)="enviarMensaje()">
+          <ion-item lines="none">
+            <ion-input type="text" placeholder="Escribir mensaje..." fill="outline" name="nuevoMensaje" [(ngModel)]="nuevoMensaje"></ion-input>
+            <ion-buttons slot="end">
+              <ion-button type="submit" shape="round" color="tertiary" expand="block" fill="solid">
+  
+                <ion-icon slot="start" name="paper-plane-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </form>
       </ion-footer>
     </ng-template>
   </ion-modal>

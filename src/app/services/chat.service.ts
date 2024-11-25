@@ -1,49 +1,39 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { UtilsService } from './utils.service';
-import { Mensaje } from '../models/models';
-import { Observable } from 'rxjs';
+import { Mensaje, Usuario } from '../models/models';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChatService {
-
-  constructor() { }
-
+  // Inyecciones de dependencias
   private authService = inject(AuthService);
-  private utilsService = inject(UtilsService);
-  
+  private utils = inject(UtilsService);
 
-  async crearMensaje(mensa: Mensaje, idViaje: string) {
+  async crearMensaje(mensaje: string, idViaje: string) {
     try {
-        mensa.timestamp = Date.now(); // Añadir marca de tiempo
-        if (mensa.id) delete mensa.id; // Eliminar `id` si está presente
-        return await this.authService.addDocument(`viajes/${idViaje}/mensajes`, mensa);
+      let usrLocal = (await this.utils.getFromLocalStorage('user')) as Usuario;
+      let nuevoMsg = {} as Mensaje;
+      nuevoMsg.timestamp = Date.now(); // Añadir marca de tiempo
+      nuevoMsg.mensaje = mensaje;
+      nuevoMsg.remitente = usrLocal.name;
+      return await this.authService.addDocument(
+        `viajes/${idViaje}/mensajes`,
+        nuevoMsg
+      );
     } catch (error) {
-        console.error('Error al crear el mensaje:', error);
-        throw error;
+      console.error('Error al crear el mensaje:', error);
+      throw error;
     }
-}
+  }
 
-getMensajes(idViaje: string): Observable<Mensaje[]> {
-  return new Observable<Mensaje[]>((subscriber) => {
-    try {
-      (this.authService.getCollection(`viajes/${idViaje}/mensajes`) as Observable<Mensaje[]>).subscribe({
-        next: (msgs) => {
-          // Ordenar los mensajes por el campo 'timestamp'
-          const mensajesOrdenados = msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-          subscriber.next(mensajesOrdenados);
-        },
-        error: (error) => {
-          console.error('Error al obtener los mensajes:', error);
-          subscriber.error(error);
-        },
-      });
-    } catch (error) {
-      console.error('Error al obtener los mensajes2:', error);
-      subscriber.error(error);
-    }
-  });
-}
+  getMensajes(idViaje: string) {
+    return this.authService.getCollection(`viajes/${idViaje}/mensajes`).pipe(
+      map( mensajes => {
+        return (mensajes as Mensaje[]).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      })
+    );
+  }
 }
