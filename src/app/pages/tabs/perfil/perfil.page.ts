@@ -16,9 +16,8 @@ export class PerfilPage implements OnInit {
   private utils = inject(UtilsService);
   private viajesSvc = inject(ViajesService);
 
-  nombre!: string;
-  apellido!: string;
-  email!: string;
+  usuario = {} as Usuario;
+  viaje = {} as Viaje;
   viajes: Viaje[] = []; 
   
   
@@ -40,13 +39,11 @@ export class PerfilPage implements OnInit {
     
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
       if(userLocal) {
-        this.nombre = userLocal.name
-        this.apellido = userLocal.lastName
-        this.email = userLocal.email
+        this.usuario = userLocal 
       } else {
         this.authSvc.getCurrentUserData().then( usr => {
-          if (usr) this.nombre = usr.name;
-          else this.nombre = '';
+          if (usr) this.usuario = usr;
+          else this.usuario = {email: '', name: '', lastName: '', uid: ''};
         });
       }
   }
