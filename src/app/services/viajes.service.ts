@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Solicitud, Usuario, Viaje } from '../models/models';
-import { map, Observable } from 'rxjs';
+import { lastValueFrom, map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -80,7 +81,10 @@ export class ViajesService {
 
   async unirseAlViaje(viaje: Viaje){
     try {
+      let Solicitudes  = await lastValueFrom(await this.getSolicitudes(viaje.id!));
+      if (Solicitudes.includes(this.utils.getFromLocalStorage('user'))) throw new Error('Ya te encuentras en el viaje');
       return await this.solicitarUnirseAlViaje(viaje);
+
     } catch (error) {
       console.error('Error al enviar solicitud:', error);
       throw error;
