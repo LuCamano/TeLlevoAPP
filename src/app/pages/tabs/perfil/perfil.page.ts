@@ -27,6 +27,7 @@ export class PerfilPage implements OnInit {
 
   ionViewWillEnter() {
     this.obtenerViajes();
+    this.datosLocalesUser();
   }
 
   ionViewWillLeave() {
