@@ -67,10 +67,8 @@ export class HomePage implements OnInit {
         {
           text: 'Aceptar',
           role: 'ok',
-          handler: () => {
-              this.unirseAlViaje(viaje);
-            }
-          }
+          handler: () => {this.unirseAlViaje(viaje)}
+        }
         ]
       }).then(alert => alert.present());
     }

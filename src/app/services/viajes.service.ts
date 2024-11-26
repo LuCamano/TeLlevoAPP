@@ -81,10 +81,11 @@ export class ViajesService {
 
   async unirseAlViaje(viaje: Viaje){
     try {
-      let Solicitudes  = await lastValueFrom(await this.getSolicitudes(viaje.id!));
-      if (Solicitudes.includes(this.utils.getFromLocalStorage('user'))) throw new Error('Ya te encuentras en el viaje');
+      // Verificar si el usuario ya envió solicitud
+      /* const user = this.utils.getFromLocalStorage('user') as Usuario;
+      const solis = lastValueFrom(this.getSolicitudes(viaje.id!, user.uid));
+      if ((await solis).length > 0) throw new Error('Ya has enviado una solicitud para este'); */
       return await this.solicitarUnirseAlViaje(viaje);
-
     } catch (error) {
       console.error('Error al enviar solicitud:', error);
       throw error;
@@ -176,8 +177,8 @@ export class ViajesService {
     return { asPasajero, asConductor };
   }
 
-  getSolicitudes(viajeId: string) {
-    return this.authSvc.getCollection(`viajes/${viajeId}/solicitudes`) as Observable<Solicitud[]>;
+  getSolicitudes(viajeId: string, userUid?: string) {
+    return this.authSvc.getCollection(`viajes/${viajeId}/solicitudes`, [{field: 'uidPasajero', opStr: '==', value: userUid}]) as Observable<Solicitud[]>;
   }
 
   iniciarViaje(viaje: Viaje){
