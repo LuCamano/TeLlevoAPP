@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Solicitud, Usuario, Viaje } from '../models/models';
-import { map, Observable } from 'rxjs';
+import { lastValueFrom, map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +81,10 @@ export class ViajesService {
 
   async unirseAlViaje(viaje: Viaje){
     try {
+      // Verificar si el usuario ya envió solicitud
+      /* const user = this.utils.getFromLocalStorage('user') as Usuario;
+      const solis = lastValueFrom(this.getSolicitudes(viaje.id!, user.uid));
+      if ((await solis).length > 0) throw new Error('Ya has enviado una solicitud para este'); */
       return await this.solicitarUnirseAlViaje(viaje);
     } catch (error) {
       console.error('Error al enviar solicitud:', error);
@@ -113,6 +118,7 @@ export class ViajesService {
         viaje.pasajeros = [uid];
       }
       solicitud.estado = 'ACEPTADA';
+      await this.actualizarViaje(viaje);
       return await this.actualizarSolicitud(solicitud, viaje.id!);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
@@ -171,8 +177,8 @@ export class ViajesService {
     return { asPasajero, asConductor };
   }
 
-  getSolicitudes(viajeId: string) {
-    return this.authSvc.getCollection(`viajes/${viajeId}/solicitudes`) as Observable<Solicitud[]>;
+  getSolicitudes(viajeId: string, userUid?: string) {
+    return this.authSvc.getCollection(`viajes/${viajeId}/solicitudes`, [{field: 'uidPasajero', opStr: '==', value: userUid}]) as Observable<Solicitud[]>;
   }
 
   iniciarViaje(viaje: Viaje){

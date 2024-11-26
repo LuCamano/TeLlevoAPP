@@ -18,10 +18,12 @@ export class HomePage implements OnInit {
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
   private viajesSvc = inject(ViajesService);
-
+  
+  private subViajes!: Subscription;
 
   nombre!: string;
   viajes: Viaje[] = []; 
+  
   
   private subConductor!: Subscription;
   private subPasajero!: Subscription;
@@ -32,9 +34,13 @@ export class HomePage implements OnInit {
   ngOnInit() {
     
   }
+  ionViewWillLeave() {
+    this.subViajes.unsubscribe();
+  }
+
   ionViewWillEnter() {
     this.comprobarViajeEnCurso();
-    this.getViajesUser();
+    this.getViajes();
     this.authSvc.getAuthIns().onAuthStateChanged( user => {
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
       if(userLocal) {
@@ -46,12 +52,13 @@ export class HomePage implements OnInit {
         });
       }
     })
+    
   }
 
   solitcitarViaje(viaje: Viaje) {
     this.alertController.create({
       header: 'Solicitar viaje',
-      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.fecha} con destino a ${viaje.destino}?`,
+      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.fecha} con destino a ${viaje.destino.direccion}?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -60,24 +67,37 @@ export class HomePage implements OnInit {
         {
           text: 'Aceptar',
           role: 'ok',
-          handler: () => {
-              this.unirseAlViaje(viaje);
-            }
-          }
+          handler: () => {this.unirseAlViaje(viaje)}
+        }
         ]
       }).then(alert => alert.present());
     }
     
-    getViajesUser() {
-      let sub = this.viajesSvc.getViajes([{field: 'estado', opStr: '==', value: 'disponible'},{field:'conductor' , opStr: '!=', value: this.utils.getFromLocalStorage('user').uid }]).subscribe(async viajes => {
-        let nuevosViajes: Viaje[] = []; 
-        await viajes.forEach(async viaje => {
-          let conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario; 
-          viaje.conductor = conductor.name;
-          nuevosViajes.push(viaje);
-        })
-        this.viajes = nuevosViajes;
-        sub.unsubscribe();
+    async getViajes() {
+      this.subViajes = this.viajesSvc.getViajes([
+        { field: 'estado', opStr: '==', value: 'disponible' }, 
+        { field: 'conductor', opStr: '!=', value: this.utils.getFromLocalStorage('user').uid }
+      ]).subscribe(async viajes => {
+        const userUid = this.utils.getFromLocalStorage('user').uid;
+        
+        // Usar un bucle for...of para manejar async/await
+        const nuevosViajes: Viaje[] = [];
+        for (const viaje of viajes) {
+          try {
+            const conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario;
+            viaje.conductor = conductor.name; // Actualiza con el nombre del conductor
+            if (viaje.asientos > 0) {
+              if (viaje.pasajeros) {
+                if (!viaje.pasajeros.includes(userUid)) nuevosViajes.push(viaje);
+              } else {
+                nuevosViajes.push(viaje);
+              }
+            } 
+          } catch (error) {
+            console.error(`Error obteniendo datos del conductor para el viaje ${viaje.id}`, error);
+          }
+        }
+        this.viajes = nuevosViajes; // Actualiza la lista de viajes
       });
     }
  
@@ -86,19 +106,17 @@ export class HomePage implements OnInit {
       await this.viajesSvc.unirseAlViaje(via);
       this.alertController.create({
         header: 'Solicitud enviada',
-        message: `Tu solicitud para el viaje de las ${via.fecha} con destino a ${via.destino} ha sido enviada con éxito.`,
+        message: `Tu solicitud para el viaje de las ${via.fecha} con destino a ${via.destino.direccion} ha sido enviada con éxito.`,
         buttons: ['Aceptar']
       }).then(alert => {
         alert.present();
       })
-      this.getViajesUser();
     } catch (error) {
-      this.utils.presentToast({
+      this.utils.presentAlert({
+        header: 'Error',
         message: 'ya te encuentras en el viaje',
-        color: 'danger',
-        duration: 2500
+        buttons: ['Aceptar'], 
       });
-      console.error('Error al unirse al viaje:', error);
     }
   }
 
@@ -118,4 +136,6 @@ export class HomePage implements OnInit {
       };
     });
   }
+
+
 }
