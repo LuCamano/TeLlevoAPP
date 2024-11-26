@@ -80,16 +80,30 @@ export class ViajesService {
   }
 
   async unirseAlViaje(viaje: Viaje){
-    try {
+    const user = this.utils.getFromLocalStorage('user') as Usuario;
+    const sub = this.getSolicitudes(viaje.id!, user.uid).subscribe( async solis => {
+      try {
+        if (solis.length > 0) throw new Error('Ya hay una solicitud en este viaje.')
+        return await this.solicitarUnirseAlViaje(viaje);
+      } catch (error) {
+        console.error('Error', error);
+        return await this.utils.presentAlert({
+          header: 'No se envió la solicitud',
+          message: 'No se puso enviar la solicitud debido a que ya se envió una solicitud a este viaje',
+          buttons: ['Aceptar']
+        });
+      } finally {
+        sub.unsubscribe();
+      }
+    });
+    /* try {
       // Verificar si el usuario ya envió solicitud
-      /* const user = this.utils.getFromLocalStorage('user') as Usuario;
-      const solis = lastValueFrom(this.getSolicitudes(viaje.id!, user.uid));
-      if ((await solis).length > 0) throw new Error('Ya has enviado una solicitud para este'); */
+      const user = this.utils.getFromLocalStorage('user') as Usuario;
       return await this.solicitarUnirseAlViaje(viaje);
     } catch (error) {
       console.error('Error al enviar solicitud:', error);
       throw error;
-    }
+    } */
   }
 
   async solicitarUnirseAlViaje(viaje: Viaje) {

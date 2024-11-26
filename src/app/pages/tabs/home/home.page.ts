@@ -104,18 +104,11 @@ export class HomePage implements OnInit {
   async unirseAlViaje(via: Viaje) {
     try {
       await this.viajesSvc.unirseAlViaje(via);
-      this.alertController.create({
-        header: 'Solicitud enviada',
-        message: `Tu solicitud para el viaje de las ${via.fecha} con destino a ${via.destino.direccion} ha sido enviada con éxito.`,
-        buttons: ['Aceptar']
-      }).then(alert => {
-        alert.present();
-      })
     } catch (error) {
-      this.utils.presentAlert({
-        header: 'Error',
-        message: 'ya te encuentras en el viaje',
-        buttons: ['Aceptar'], 
+      this.utils.presentToast({
+        message: 'Error' + error,
+        color: 'danger',
+        duration: 2000
       });
     }
   }
