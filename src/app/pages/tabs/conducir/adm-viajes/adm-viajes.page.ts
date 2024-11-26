@@ -56,7 +56,7 @@ export class AdmViajesPage implements OnInit {
     this.chatSvc.getMensajes(this.viaje.id!).subscribe(
       msgs => {
         this.mensajes = msgs; // Mensajes ordenados por timestamp
-        this.scrollToBottom2(); // Desplazamiento automático al fondo
+        setTimeout(() => this.mensajesContainer.scrollToBottom(),10); // Desplazamiento automático al fondo   
       }
     );
   }
@@ -74,12 +74,6 @@ export class AdmViajesPage implements OnInit {
           duration: 2000,
         });
       }
-    }
-  }
-
-  scrollToBottom2(duration: number = 300): void {
-    if (this.mensajesContainer) {
-      this.mensajesContainer.scrollToBottom(duration); // Desplazamiento automático al fondo
     }
   }
 
