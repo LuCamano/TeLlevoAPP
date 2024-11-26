@@ -113,6 +113,7 @@ export class ViajesService {
         viaje.pasajeros = [uid];
       }
       solicitud.estado = 'ACEPTADA';
+      await this.actualizarViaje(viaje);
       return await this.actualizarSolicitud(solicitud, viaje.id!);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
