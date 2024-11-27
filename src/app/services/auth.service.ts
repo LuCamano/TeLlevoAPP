@@ -35,7 +35,7 @@ export class AuthService {
 
   signOut(){
     this.ngFireAuth.signOut();
-    localStorage.removeItem('user');
+    localStorage.clear();
     this.utils.navigateRoot('/login');
   }
 

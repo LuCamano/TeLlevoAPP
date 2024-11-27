@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Solicitud, Usuario, Viaje } from '../models/models';
-import { lastValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
 
@@ -80,16 +80,27 @@ export class ViajesService {
   }
 
   async unirseAlViaje(viaje: Viaje){
-    try {
-      // Verificar si el usuario ya envió solicitud
-      /* const user = this.utils.getFromLocalStorage('user') as Usuario;
-      const solis = lastValueFrom(this.getSolicitudes(viaje.id!, user.uid));
-      if ((await solis).length > 0) throw new Error('Ya has enviado una solicitud para este'); */
-      return await this.solicitarUnirseAlViaje(viaje);
-    } catch (error) {
-      console.error('Error al enviar solicitud:', error);
-      throw error;
-    }
+    const user = this.utils.getFromLocalStorage('user') as Usuario;
+    const sub = this.getSolicitudes(viaje.id!, user.uid).subscribe( async solis => {
+      try {
+        if (solis.length > 0) throw new Error('Ya hay una solicitud en este viaje.')
+        await this.solicitarUnirseAlViaje(viaje);
+        return await this.utils.presentAlert({
+          header: 'Solicitud enviada',
+          message: 'Se ha enviado la solicitud para unirse al viaje',
+          buttons: ['Aceptar']
+        });
+      } catch (error) {
+        console.error('Error', error);
+        return await this.utils.presentAlert({
+          header: 'No se envió la solicitud',
+          message: 'No se pudo enviar la solicitud debido a que ya se envió una solicitud a este viaje',
+          buttons: ['Aceptar']
+        });
+      } finally {
+        sub.unsubscribe();
+      }
+    });
   }
 
   async solicitarUnirseAlViaje(viaje: Viaje) {
