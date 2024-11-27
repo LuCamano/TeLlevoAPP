@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Solicitud, Usuario, Viaje } from '../models/models';
-import { lastValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
 
