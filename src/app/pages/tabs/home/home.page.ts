@@ -18,29 +18,27 @@ export class HomePage implements OnInit {
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
   private viajesSvc = inject(ViajesService);
-  
+
   private subViajes!: Subscription;
 
-  nombre!: string;
-  viajes: Viaje[] = []; 
-  
-  
-  private subConductor!: Subscription;
-  private subPasajero!: Subscription;
+  private viajeEnCursoSub!: Subscription;
 
-  conduciendo = false;
-  dePasajero = false;
+  nombre!: string;
+  viajes: Viaje[] = [];
+
+  viajeEnCurso: { status: boolean, viaje?: Viaje, esConductor?: boolean } = { status: false }; 
 
   ngOnInit() {
     
   }
   ionViewWillLeave() {
     this.subViajes.unsubscribe();
+    this.viajeEnCursoSub.unsubscribe();
   }
 
   ionViewWillEnter() {
-    this.comprobarViajeEnCurso();
     this.getViajes();
+    this.obtenerViajeEnCurso();
     this.authSvc.getAuthIns().onAuthStateChanged( user => {
       let userLocal:Usuario = this.utils.getFromLocalStorage('user');
       if(userLocal) {
@@ -51,8 +49,7 @@ export class HomePage implements OnInit {
           else this.nombre = '';
         });
       }
-    })
-    
+    });
   }
 
   solitcitarViaje(viaje: Viaje) {
@@ -73,33 +70,33 @@ export class HomePage implements OnInit {
       }).then(alert => alert.present());
     }
     
-    async getViajes() {
-      this.subViajes = this.viajesSvc.getViajes([
-        { field: 'estado', opStr: '==', value: 'disponible' }, 
-        { field: 'conductor', opStr: '!=', value: this.utils.getFromLocalStorage('user').uid }
-      ]).subscribe(async viajes => {
-        const userUid = this.utils.getFromLocalStorage('user').uid;
-        
-        // Usar un bucle for...of para manejar async/await
-        const nuevosViajes: Viaje[] = [];
-        for (const viaje of viajes) {
-          try {
-            const conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario;
-            viaje.conductor = conductor.name; // Actualiza con el nombre del conductor
-            if (viaje.asientos > 0) {
-              if (viaje.pasajeros) {
-                if (!viaje.pasajeros.includes(userUid)) nuevosViajes.push(viaje);
-              } else {
-                nuevosViajes.push(viaje);
-              }
-            } 
-          } catch (error) {
-            console.error(`Error obteniendo datos del conductor para el viaje ${viaje.id}`, error);
+  async getViajes() {
+    this.subViajes = this.viajesSvc.getViajes([
+      { field: 'estado', opStr: '==', value: 'disponible' },
+      { field: 'conductor', opStr: '!=', value: this.utils.getFromLocalStorage('user').uid }
+    ]).subscribe(async viajes => {
+      const userUid = (this.utils.getFromLocalStorage('user') as Usuario).uid;
+
+      // Usar un bucle for...of para manejar async/await
+      const nuevosViajes: Viaje[] = [];
+      for (const viaje of viajes) {
+        try {
+          const conductor: Usuario = await this.authSvc.getDocument(`usuarios/${viaje.conductor}`) as Usuario;
+          viaje.conductor = conductor.name; // Actualiza con el nombre del conductor
+          if (viaje.asientos > 0) {
+            if (viaje.pasajeros) {
+              if (!viaje.pasajeros.includes(userUid)) nuevosViajes.push(viaje);
+            } else {
+              nuevosViajes.push(viaje);
+            }
           }
+        } catch (error) {
+          console.error(`Error obteniendo datos del conductor para el viaje ${viaje.id}`, error);
         }
-        this.viajes = nuevosViajes; // Actualiza la lista de viajes
-      });
-    }
+      }
+      this.viajes = nuevosViajes; // Actualiza la lista de viajes
+    });
+  }
  
   async unirseAlViaje(via: Viaje) {
     try {
@@ -113,22 +110,13 @@ export class HomePage implements OnInit {
     }
   }
 
-  comprobarViajeEnCurso() {
-    const uid = this.utils.getFromLocalStorage('user').uid;
-    const { asConductor, asPasajero } = this.viajesSvc.revisarSiHayViajeEnCurso(uid);
-    this.subConductor = asConductor.subscribe( resp => {
-      this.conduciendo = resp.status;
-      if (resp.status) {
-        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
-      };
-    });
-    this.subPasajero = asPasajero.subscribe( resp => {
-      this.dePasajero = resp.status;
-      if (resp.status) {
-        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
-      };
-    });
+  obtenerViajeEnCurso() {
+    const {uid} = this.utils.getFromLocalStorage('user') as Usuario;
+    this.viajeEnCursoSub = this.viajesSvc.revisarSiHayViajeEnCurso(uid).subscribe(
+      resp => {
+        this.viajeEnCurso = resp;
+        this.viajesSvc.setViajeEnCurso(resp.viaje);
+      }
+    );
   }
-
-
 }

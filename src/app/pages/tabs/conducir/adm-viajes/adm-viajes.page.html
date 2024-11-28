@@ -20,9 +20,11 @@
       <ion-fab-button color="danger" (click)="terminarViaje()"><ion-icon name="power-outline"></ion-icon></ion-fab-button>
     </ion-fab-list>
   </ion-fab>
+  <!-- Mapa -->
   <div id="map-container">
     <div class="map" id="mapa" tabindex="0"></div>
   </div>
+  <!-- Modal para las solicitudes -->
   <ion-modal [isOpen]="solicitudesModal" (willDismiss)="solicitudesModal = false">
     <ng-template>
       <ion-header>
@@ -54,6 +56,7 @@
       </ion-content>
     </ng-template>
   </ion-modal>
+  <!-- Modal para los mensajes -->
   <ion-modal [isOpen]="mensajesModal" (willDismiss)="mensajesModal = false">
     <ng-template>
       <ion-header>
