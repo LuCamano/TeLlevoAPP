@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { UtilsService } from '../../../services/utils.service';
+import { emailDomainValidator } from 'src/app/validators/domain.validator';
+import { camposCoincidenValidator } from 'src/app/validators/campos-coinciden.validator';
 
 @Component({
   selector: 'app-register',
@@ -16,12 +18,17 @@ export class RegisterPage implements OnInit {
   registroForm = new FormGroup({
     nombre: new FormControl('', [Validators.required, Validators.minLength(4)]),
     apellidos: new FormControl('', [Validators.required, Validators.minLength(4)]),
-    email: new FormControl('', [Validators.email, Validators.required]),
+    email: new FormControl('', [Validators.email, Validators.required, emailDomainValidator]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     password2: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
   ngOnInit() {
+    this.registroForm.controls.password2.setValidators([
+      Validators.required,
+      Validators.minLength(6),
+      camposCoincidenValidator(this.registroForm.controls.password)
+    ]);
   }
 
 
