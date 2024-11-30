@@ -5,6 +5,7 @@ import { UtilsService } from '../../../services/utils.service';
 import { Usuario, Viaje } from 'src/app/models/models';
 import { ViajesService } from 'src/app/services/viajes.service';
 import { Subscription } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,7 @@ import { Subscription } from 'rxjs';
 export class HomePage implements OnInit {
 
   // Inyectar dependencias
-  private alertController = inject(AlertController);
+  private datePipe = inject(DatePipe);
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
   private viajesSvc = inject(ViajesService);
@@ -53,9 +54,11 @@ export class HomePage implements OnInit {
   }
 
   solitcitarViaje(viaje: Viaje) {
-    this.alertController.create({
+    const hora = this.datePipe.transform(viaje.fecha, 'HH:mm a');
+    const destino = viaje.destino.direccion.split(', ')[1];
+    this.utils.presentAlert({
       header: 'Solicitar viaje',
-      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.fecha} con destino a ${viaje.destino.direccion}?`,
+      message: `¿Estás seguro que deseas solicitar el viaje de las ${hora} con destino a ${destino}?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -66,9 +69,9 @@ export class HomePage implements OnInit {
           role: 'ok',
           handler: () => {this.unirseAlViaje(viaje)}
         }
-        ]
-      }).then(alert => alert.present());
-    }
+      ]
+    });
+  }
     
   async getViajes() {
     this.subViajes = this.viajesSvc.getViajes([
