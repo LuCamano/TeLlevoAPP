@@ -11,8 +11,8 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   return new Promise( resolve => {
     authSvc.getAuthIns().onAuthStateChanged( auth => {
-      if (auth) {
-        if (user) resolve(true);
+      if (auth && user) {
+        resolve(true);
       } else {
         utils.navigateRoot('/login');
         resolve(false);

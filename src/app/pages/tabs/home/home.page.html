@@ -4,10 +4,10 @@
   <ion-text>
     <h1>Bienvenido, {{nombre}}</h1>
     <!-- Aviso de viaje disponible -->
-    <ion-item *ngIf="conduciendo || dePasajero" lines="none" color="tertiary" class="viaje-en-curso">
+    <ion-item *ngIf="viajeEnCurso.status" lines="none" color="tertiary" class="viaje-en-curso">
       <ion-label slot="start">Tienes un viaje en curso</ion-label>
       <ion-button slot="end" color="success"
-        routerDirection="forward" routerLink="/conducir/adm-viajes">
+        routerDirection="forward" [routerLink]="viajeEnCurso.esConductor ? '/conducir/adm-viajes' : '/vista-viaje'">
         Ir al viaje
       </ion-button>
     </ion-item>

@@ -15,28 +15,24 @@ export class ConducirPage implements OnInit {
   private utils = inject(UtilsService);
 
   viajes: Viaje[] = [];
+  viajeEnCurso: { status: boolean, viaje?: Viaje, esConductor?: boolean } = { status: false }; 
+
 
   public isLoading = false;
 
   private subViajes!: Subscription;
-
-  conduciendo = false;
-  dePasajero = false;
-
-  private subConductor!: Subscription;
-  private subPasajero!: Subscription;
+  private viajeEnCursoSub!: Subscription;
 
   ngOnInit() {}
 
   ionViewWillEnter() {
     this.obtenerViajes();
-    this.comprobarViajeEnCurso();
+    this.obtenerViajeEnCurso();
   }
 
   ionViewWillLeave() {
     if (this.subViajes) this.subViajes.unsubscribe();
-    if (this.subConductor) this.subConductor.unsubscribe();
-    if (this.subPasajero) this.subPasajero.unsubscribe();
+    if (this.viajeEnCursoSub) this.viajeEnCursoSub.unsubscribe();
   }
 
   obtenerViajes() {
@@ -66,20 +62,13 @@ export class ConducirPage implements OnInit {
     }
   }
 
-  comprobarViajeEnCurso() {
+  obtenerViajeEnCurso() {
     const uid = this.utils.getFromLocalStorage('user').uid;
-    const { asConductor, asPasajero } = this.viajesSvc.revisarSiHayViajeEnCurso(uid);
-    this.subConductor = asConductor.subscribe( resp => {
-      this.conduciendo = resp.status;
-      if (resp.status) {
-        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
-      };
-    });
-    this.subPasajero = asPasajero.subscribe( resp => {
-      this.dePasajero = resp.status;
-      if (resp.status) {
-        this.utils.saveInLocalStorage('viajeEnCurso', resp.viaje);
-      };
-    });
+    this.viajeEnCursoSub = this.viajesSvc.revisarSiHayViajeEnCurso(uid).subscribe(
+      resp => {
+        this.viajeEnCurso = resp;
+        this.viajesSvc.setViajeEnCurso(resp.viaje);
+      }
+    );
   }
 }

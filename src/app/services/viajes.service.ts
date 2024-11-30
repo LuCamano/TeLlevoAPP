@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Solicitud, Usuario, Viaje } from '../models/models';
-import { map, Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
 
@@ -13,6 +13,8 @@ export class ViajesService {
   // Inyecciones de dependencias
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
+
+  private viajeEnCurso: Viaje | undefined;
 
   async crearViaje(viaje: Viaje){
     try {
@@ -81,18 +83,18 @@ export class ViajesService {
 
   async unirseAlViaje(viaje: Viaje){
     const user = this.utils.getFromLocalStorage('user') as Usuario;
-    const sub = this.getSolicitudes(viaje.id!, user.uid).subscribe( async solis => {
+    const sub = this.getSolicitudes(viaje.id!, user.uid).subscribe( solis => {
       try {
         if (solis.length > 0) throw new Error('Ya hay una solicitud en este viaje.')
-        await this.solicitarUnirseAlViaje(viaje);
-        return await this.utils.presentAlert({
+        this.solicitarUnirseAlViaje(viaje);
+        this.utils.presentAlert({
           header: 'Solicitud enviada',
           message: 'Se ha enviado la solicitud para unirse al viaje',
           buttons: ['Aceptar']
         });
       } catch (error) {
         console.error('Error', error);
-        return await this.utils.presentAlert({
+        this.utils.presentAlert({
           header: 'No se envió la solicitud',
           message: 'No se pudo enviar la solicitud debido a que ya se envió una solicitud a este viaje',
           buttons: ['Aceptar']
@@ -147,7 +149,7 @@ export class ViajesService {
     }
   }
 
-  revisarSiHayViajeEnCurso(uid: string){
+  revisarSiHayViajeEnCurso(uid: string) {
     let asPasajero = this.getViajes([
       {
         field: 'pasajeros',
@@ -159,13 +161,14 @@ export class ViajesService {
         opStr: 'in',
         value: ['iniciado', 'preparándose', 'disponible']
       }
-    ]).pipe(map( viajes => {
+    ]).pipe(map(viajes => {
       if (viajes.length > 0) {
-        return { status:true, viaje: viajes[0] };
-      } else { 
-        return { status:false };
+        return { status: true, viaje: viajes[0], esConductor: false };
+      } else {
+        return { status: false, esConductor: false };
       }
     }));
+
     let asConductor = this.getViajes([
       {
         field: 'conductor',
@@ -177,15 +180,33 @@ export class ViajesService {
         opStr: 'in',
         value: ['iniciado', 'preparándose', 'disponible']
       }
-    ]).pipe(map( viajes => {
+    ]).pipe(map(viajes => {
       if (viajes.length > 0) {
-        return { status:true, viaje: viajes[0] };
-      } else { 
-        return { status:false };
+        return { status: true, viaje: viajes[0], esConductor: true };
+      } else {
+        return { status: false, esConductor: true };
       }
     }));
 
-    return { asPasajero, asConductor };
+    return combineLatest([asPasajero, asConductor]).pipe(
+      map(([pasajeroResult, conductorResult]) => {
+        if (pasajeroResult.status) {
+          return pasajeroResult;
+        } else if (conductorResult.status) {
+          return conductorResult;
+        } else {
+          return { status: false, esConductor: false };
+        }
+      })
+    );
+  }
+
+  setViajeEnCurso(viaje: Viaje | undefined) {
+    this.viajeEnCurso = viaje;
+  }
+
+  get getViajeEnCurso() {
+    return this.viajeEnCurso;
   }
 
   getSolicitudes(viajeId: string, userUid?: string) {

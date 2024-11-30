@@ -18,8 +18,8 @@ export class AdmViajesPage implements OnInit {
 
   private utils = inject(UtilsService);
   private mapbox = inject(MapboxService);
-  private viajesSvc = inject(ViajesService);
   private chatSvc = inject(ChatService);
+  private viajesSvc = inject(ViajesService);
 
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
@@ -28,6 +28,7 @@ export class AdmViajesPage implements OnInit {
   mensajesModal = false;
 
   private subSolicitudes!: Subscription;
+  private subMensajes!: Subscription;
 
   mensajes: Mensaje[] = [];
   solicitudes: Solicitud[] = [];
@@ -48,12 +49,13 @@ export class AdmViajesPage implements OnInit {
   ionViewWillLeave() {
     if (this.watchPosCallId) this.utils.clearWatch(this.watchPosCallId);
     if (this.subSolicitudes) this.subSolicitudes.unsubscribe();
+    if (this.subMensajes) this.subMensajes.unsubscribe();
   }
 
   ngOnInit() {}
 
   verMensajes() {
-    this.chatSvc.getMensajes(this.viaje.id!).subscribe(
+    this.subMensajes = this.chatSvc.getMensajes(this.viaje.id!).subscribe(
       msgs => {
         this.mensajes = msgs; // Mensajes ordenados por timestamp
         setTimeout(() => this.mensajesContainer.scrollToBottom(),10); // Desplazamiento automático al fondo   
@@ -79,9 +81,6 @@ export class AdmViajesPage implements OnInit {
 
   async buildMap() {
     try {
-      // Obtener coordenadas actuales
-      const { latitude, longitude } = (await this.utils.getCurrentPosition())
-        .coords;
       // Crear el mapa
       const mapa = await this.mapbox.buildMap((map1) => {
         // Cargar la ruta al iniciar el mapa
@@ -104,8 +103,7 @@ export class AdmViajesPage implements OnInit {
         );
 
         // Actualizar la posición del marcador
-        this.utils
-          .watchPosition({}, (position) => {
+        this.utils.watchPosition({}, (position) => {
             const { latitude, longitude } = position!.coords;
             this.currentMarker.setLngLat([longitude, latitude]);
             this.map.flyTo({
@@ -113,8 +111,7 @@ export class AdmViajesPage implements OnInit {
               pitch: this.map.getPitch(),
               bearing: this.map.getBearing(),
             });
-          })
-          .then((id) => (this.watchPosCallId = id));
+          }).then((id) => (this.watchPosCallId = id));
       });
       // Asignar el mapa a la propiedad
       this.map = mapa;
@@ -205,24 +202,30 @@ export class AdmViajesPage implements OnInit {
   }
 
   terminarViaje() {
-    try {
-      if (this.viaje.estado === 'iniciado')
-        this.viajesSvc.finalizarViaje(this.viaje);
-      else this.viajesSvc.cancelarViaje(this.viaje);
-      localStorage.removeItem('viajeEnCurso');
-      this.utils.navigateBack();
-    } catch (error) {
-      this.utils.presentToast({
-        color: 'danger',
-        message: 'Error al terminar el viaje',
-        duration: 2000,
-      });
-    }
+    this.utils.presentAlert({
+      header: 'Terminar viaje',
+      message: '¿Está seguro de que desea terminar el viaje?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          role: 'ok',
+          handler: () => {
+            if (this.viaje.estado === 'iniciado') this.viajesSvc.finalizarViaje(this.viaje);
+            else this.viajesSvc.cancelarViaje(this.viaje);
+            this.utils.navigateBack();
+          },
+        },
+      ],
+    });
   }
 
   async obtenerViaje() {
     try {
-      this.viaje = this.utils.getFromLocalStorage('viajeEnCurso') as Viaje;
+      this.viaje = this.viajesSvc.getViajeEnCurso!;
       if (!this.viaje) {
         throw new Error('No hay un viaje en curso');
       }

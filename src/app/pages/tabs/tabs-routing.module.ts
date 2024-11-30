@@ -39,6 +39,10 @@ const routes: Routes = [
   {
     path: 'conducir',
     loadChildren: () => import('./conducir/conducir.module').then( m => m.ConducirPageModule)
+  },
+  {
+    path: 'vista-viaje',
+    loadChildren: () => import('./vista-viaje/vista-viaje.module').then( m => m.VistaViajePageModule)
   }
 ];
 

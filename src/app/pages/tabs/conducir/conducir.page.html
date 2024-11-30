@@ -1,16 +1,16 @@
 <app-encabezado titulo="Conducir" [shouldGoBack]="true" defaultHref="/tabs"></app-encabezado>
 
 <ion-content class="ion-padding">
-  <ion-fab *ngIf="!conduciendo && !dePasajero && !isLoading" vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab *ngIf="!viajeEnCurso.status" vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button routerLink="/conducir/crear-viajes" routerDirection="forward">
       <ion-icon name="car"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <!-- Aviso de viaje en curso -->
-  <ion-item *ngIf="conduciendo || dePasajero" lines="none" color="tertiary" class="viaje-en-curso">
+  <!-- Aviso de viaje disponible -->
+  <ion-item *ngIf="viajeEnCurso.status" lines="none" color="tertiary" class="viaje-en-curso">
     <ion-label slot="start">Tienes un viaje en curso</ion-label>
     <ion-button slot="end" color="success"
-      routerDirection="forward" routerLink="adm-viajes">
+      routerDirection="forward" [routerLink]="viajeEnCurso.esConductor ? '/conducir/adm-viajes' : '/vista-viaje'">
       Ir al viaje
     </ion-button>
   </ion-item>
