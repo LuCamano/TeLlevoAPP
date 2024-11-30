@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
@@ -16,6 +16,7 @@ import { ComponentsModule } from "../../../components/components.module";
     ViajesPageRoutingModule,
     ComponentsModule
   ],
-  declarations: [ViajesPage]
+  declarations: [ViajesPage],
+  providers: [DatePipe]
 })
 export class ViajesPageModule {}
