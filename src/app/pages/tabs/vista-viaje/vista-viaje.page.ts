@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { Mensaje, Viaje } from 'src/app/models/models';
+import { Mensaje, Usuario, Viaje } from 'src/app/models/models';
+import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -18,6 +19,7 @@ export class VistaViajePage implements OnInit {
   private utils = inject(UtilsService);
   private chatSvc = inject(ChatService);
   private mapbox = inject(MapboxService);
+  private authSvc = inject(AuthService);
 
   @ViewChild('mensajesContainer') mensajesContainer!: IonContent;
 
@@ -33,7 +35,7 @@ export class VistaViajePage implements OnInit {
   nuevoMensaje = '';
 
   viaje = {} as Viaje;
-
+  usuario = {} as Usuario;
   private watchPosCallId!: string;
 
   ngOnInit() {}
@@ -42,6 +44,7 @@ export class VistaViajePage implements OnInit {
     this.obtenerViaje();
     this.buildMap();
     this.verMensajes();
+    this.datosLocalesUser();
   }
 
   ionViewWillLeave() {
@@ -132,6 +135,17 @@ export class VistaViajePage implements OnInit {
           duration: 2000,
         });
       }
+    }
+  }
+  datosLocalesUser() {
+    let userLocal: Usuario = this.utils.getFromLocalStorage('user');
+    if (userLocal) {
+      this.usuario = userLocal;
+    } else {
+      this.authSvc.getCurrentUserData().then((usr) => {
+        if (usr) this.usuario = usr;
+        else this.usuario = { email: '', name: '', lastName: '', uid: '' };
+      });
     }
   }
 }

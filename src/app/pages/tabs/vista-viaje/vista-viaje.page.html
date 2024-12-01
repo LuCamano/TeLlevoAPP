@@ -25,14 +25,31 @@
             </ion-toolbar>
         </ion-header>
         <ion-content #mensajesContainer id="mensajes-container" class="ion-padding">
-            <ion-card *ngFor="let mensaje of mensajes">
-            <ion-card-header>
-                <ion-card-subtitle> {{mensaje.remitente}} </ion-card-subtitle>
-            </ion-card-header>
-            <ion-card-content>
-                <p>{{mensaje.mensaje}}</p>
-            </ion-card-content>
-            </ion-card>
+            @for (mensaje of mensajes; track $index) {
+                @if (mensaje.remitente === usuario.name) {
+                  <!-- Mensaje del usuario -->
+                  <div class="mensaje-usuario">
+                    <ion-label>
+                      <strong>{{mensaje.remitente}}</strong>
+                      <br />
+                      <ion-note>
+                        {{ mensaje.mensaje }}
+                      </ion-note>
+                    </ion-label>
+                  </div>
+                }
+                @else {
+                  <div class="mensaje-recibido">
+                    <ion-label>
+                      <strong>{{mensaje.remitente}}</strong>
+                      <br />
+                      <ion-note>
+                        {{ mensaje.mensaje }}
+                      </ion-note>
+                    </ion-label>
+                  </div>
+                }
+              }
         </ion-content>
         <ion-footer class="ion-padding">
             <form #mensajeForm="ngForm" (ngSubmit)="enviarMensaje()">

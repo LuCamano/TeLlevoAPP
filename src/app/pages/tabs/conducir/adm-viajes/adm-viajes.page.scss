@@ -9,3 +9,36 @@
     width: 100%;
 }
 
+#mensajes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    height: calc(100vh - 150px); /* Ajustar según el tamaño del encabezado y entrada */
+    background-color: #ffffff; /* Color de fondo general */
+  }
+  
+  .mensaje-usuario {
+    align-self: flex-start;
+    max-width: 70%;
+    background-color: #dcf8c6;
+    padding: 10px;
+    border-radius: 10px;
+    color: #000;
+    font-size: 15px;
+    word-wrap: break-word;
+  }
+  
+  .mensaje-recibido {
+    align-self: flex-end;
+    max-width: 70%;
+    background-color: #f1f0f0;
+    padding: 10px;
+    border-radius: 10px;
+    color: #000;
+    font-size: 15px;
+    word-wrap: break-word;
+  }
+  
+
