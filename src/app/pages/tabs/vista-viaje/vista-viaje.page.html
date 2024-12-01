@@ -24,32 +24,35 @@
             </ion-buttons>
             </ion-toolbar>
         </ion-header>
-        <ion-content #mensajesContainer id="mensajes-container" class="ion-padding">
+        <ion-content #mensajesContainer >
+          <div id="mensajes-container" >
             @for (mensaje of mensajes; track $index) {
-                @if (mensaje.remitente === usuario.name) {
-                  <!-- Mensaje del usuario -->
-                  <div class="mensaje-usuario">
-                    <ion-label>
-                      <strong>{{mensaje.remitente}}</strong>
-                      <br />
-                      <ion-note>
-                        {{ mensaje.mensaje }}
-                      </ion-note>
-                    </ion-label>
-                  </div>
-                }
-                @else {
-                  <div class="mensaje-recibido">
-                    <ion-label>
-                      <strong>{{mensaje.remitente}}</strong>
-                      <br />
-                      <ion-note>
-                        {{ mensaje.mensaje }}
-                      </ion-note>
-                    </ion-label>
-                  </div>
-                }
+              @if (mensaje.remitente === usuario.name) {
+                <!-- Mensaje del usuario -->
+                <div class="mensaje-usuario">
+                  <ion-label>
+                    <strong>{{mensaje.remitente}}</strong>
+                    <br />
+                    <ion-note>
+                      {{ mensaje.mensaje }}
+                    </ion-note>
+                  </ion-label>
+                </div>
               }
+              @else {
+                <div class="mensaje-recibido">
+                  <ion-label>
+                    <strong>{{mensaje.remitente}}</strong>
+                    <br />
+                    <ion-note>
+                      {{ mensaje.mensaje }}
+                    </ion-note>
+                  </ion-label>
+                </div>
+              }
+            }
+          </div>
+            
         </ion-content>
         <ion-footer class="ion-padding">
             <form #mensajeForm="ngForm" (ngSubmit)="enviarMensaje()">
