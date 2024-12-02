@@ -2,7 +2,6 @@ import { Component, inject, OnInit, ViewChild} from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { Mensaje, Solicitud, Usuario, Viaje } from 'src/app/models/models';
-import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -21,7 +20,6 @@ export class AdmViajesPage implements OnInit {
   private mapbox = inject(MapboxService);
   private chatSvc = inject(ChatService);
   private viajesSvc = inject(ViajesService);
-  private authSvc = inject(AuthService);
 
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
@@ -58,15 +56,7 @@ export class AdmViajesPage implements OnInit {
   ngOnInit() {}
   
   datosLocalesUser() {
-    let userLocal: Usuario = this.utils.getFromLocalStorage('user');
-    if (userLocal) {
-      this.usuario = userLocal;
-    } else {
-      this.authSvc.getCurrentUserData().then((usr) => {
-        if (usr) this.usuario = usr;
-        else this.usuario = { email: '', name: '', lastName: '', uid: '' };
-      });
-    }
+    this.usuario = this.utils.getFromLocalStorage('user') as Usuario;
   }
   verMensajes() {
     this.subMensajes = this.chatSvc.getMensajes(this.viaje.id!).subscribe(

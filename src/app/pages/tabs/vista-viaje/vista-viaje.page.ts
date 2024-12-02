@@ -137,15 +137,8 @@ export class VistaViajePage implements OnInit {
       }
     }
   }
+
   datosLocalesUser() {
-    let userLocal: Usuario = this.utils.getFromLocalStorage('user');
-    if (userLocal) {
-      this.usuario = userLocal;
-    } else {
-      this.authSvc.getCurrentUserData().then((usr) => {
-        if (usr) this.usuario = usr;
-        else this.usuario = { email: '', name: '', lastName: '', uid: '' };
-      });
-    }
+    this.usuario = this.utils.getFromLocalStorage('user') as Usuario;
   }
 }
