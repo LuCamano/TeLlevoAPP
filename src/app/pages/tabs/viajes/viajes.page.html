@@ -7,14 +7,47 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
+      <ion-button expand="block" fill="clear" (click)="limpiarFiltros()" shape="round">
+        Limpiar filtro
+      </ion-button>
       <ion-accordion-group>
         <ion-accordion>
           <ion-item slot="header">
             <ion-label>Destino</ion-label>
           </ion-item>
-          <div slot="content" >
-            <ion-item *ngFor="let destino of filtrarDato(viajes, 'destino')">
-            <ion-checkbox>{{destino.direccion.split(', ')[1]}}</ion-checkbox>
+          <div slot="content">
+            <ion-item>
+              <ion-input type="text" placeholder="Comuna destino" (input)="filtrarViajes()" [(ngModel)]="valoresFiltro.destino" fill="outline"></ion-input>
+            </ion-item>
+          </div>
+        </ion-accordion>
+        <ion-accordion>
+          <ion-item slot="header">
+            <ion-label>Asientos</ion-label>
+          </ion-item>
+          <div slot="content">
+            <ion-item>
+              <ion-input type="number" placeholder="Asientos" (input)="filtrarViajes()" [(ngModel)]="valoresFiltro.cantAsientos" fill="outline"></ion-input>
+            </ion-item>
+          </div>
+        </ion-accordion>
+        <ion-accordion>
+          <ion-item slot="header">
+            <ion-label>Precio</ion-label>
+          </ion-item>
+          <div slot="content">
+            <ion-item lines="none">
+              <ion-input type="number" helperText="Mínimo" fill="outline" [(ngModel)]="valoresFiltro.rangoPrecio.lower" (input)="actualizarRangoPrecio()" placeholder="Min"></ion-input>
+              <ion-input type="number" helperText="Máximo" fill="outline" [(ngModel)]="valoresFiltro.rangoPrecio.upper" (input)="actualizarRangoPrecio()" placeholder="Max"></ion-input>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-range
+                min="0" max="50000"
+                dualKnobs="true" pin="true"
+                [(ngModel)]="valoresFiltro.rangoPrecio"
+                step="100" color="primary" mode="ios"
+                (ionChange)="filtrarViajes()">
+              </ion-range>
             </ion-item>
           </div>
         </ion-accordion>
@@ -31,10 +64,60 @@
         <ion-title>Viajes encontrados:</ion-title>
         <ion-button fill="clear" (click)="mostrarFiltro()" class="ion-hide-md-up">Filtro</ion-button>
       </ion-row>
-      <ion-text *ngIf="viajes.length === 0" class="ion-padding">
+      <ion-text *ngIf="viajesFiltrados.length === 0 && !loading">
         <h4> No hay viajes disponibles</h4>
       </ion-text>
-      <ion-card *ngFor="let viaje of viajes">
+      <!-- Viajes falsos de carga -->
+      <ion-card *ngIf="loading && viajesFiltrados.length === 0">
+        <ion-card-header>
+          <ion-card-title><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 55%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 48%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 45%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-label><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+      <ion-card *ngIf="loading && viajesFiltrados.length === 0">
+        <ion-card-header>
+          <ion-card-title><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 55%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 48%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-skeleton-text animated style="width: 45%"></ion-skeleton-text></ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-label><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+      <!-- Viajes -->
+      <ion-card *ngFor="let viaje of viajesFiltrados">
         <ion-card-header>
           <ion-card-title>Destino: {{viaje.destino.direccion.split(', ')[1]}}</ion-card-title>
         </ion-card-header>

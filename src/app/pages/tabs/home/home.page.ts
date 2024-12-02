@@ -27,6 +27,8 @@ export class HomePage implements OnInit {
   nombre!: string;
   viajes: Viaje[] = [];
 
+  loading = true;
+
   viajeEnCurso: { status: boolean, viaje?: Viaje, esConductor?: boolean } = { status: false }; 
 
   ngOnInit() {
@@ -98,6 +100,7 @@ export class HomePage implements OnInit {
         }
       }
       this.viajes = nuevosViajes; // Actualiza la lista de viajes
+      this.loading = false; // Oculta los viajes falsos
     });
   }
  

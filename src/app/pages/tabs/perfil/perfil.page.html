@@ -32,6 +32,9 @@
       <ion-card-title>Historial de viajes</ion-card-title>
     </ion-card-header>
     <ion-card-content>
+      <ion-item *ngIf="viajes.length === 0">
+        <ion-label>No hay viajes en el historial</ion-label>
+      </ion-item>
       <ion-accordion-group>
         <ion-accordion *ngFor="let viaje of viajes">
           <ion-item slot="header">

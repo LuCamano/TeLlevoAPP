@@ -21,6 +21,16 @@ export class ViajesPage implements OnInit {
   
   viajes: Viaje[] = [];
 
+  loading = true;
+
+  viajesFiltrados: Viaje[] = [];
+
+  valoresFiltro = {
+    destino: '',
+    cantAsientos: 1,
+    rangoPrecio: { lower: 0, upper: 50000 }
+  }
+
   private subViajes!: Subscription;
 
   ngOnInit() {
@@ -32,6 +42,14 @@ export class ViajesPage implements OnInit {
 
   ionViewWillLeave() {
     this.subViajes.unsubscribe();
+  }
+
+  actualizarRangoPrecio() {
+    this.valoresFiltro.rangoPrecio = {
+      lower: this.valoresFiltro.rangoPrecio.lower,
+      upper: this.valoresFiltro.rangoPrecio.upper
+    };
+    this.filtrarViajes();
   }
 
   filtrarDato(arr: Array<{ [key: string]: any }>, key: string): any[] {
@@ -46,6 +64,28 @@ export class ViajesPage implements OnInit {
     });
     result = result.sort();
     return result;
+  }
+
+  limpiarFiltros() {
+    this.valoresFiltro = {
+      destino: '',
+      cantAsientos: 1,
+      rangoPrecio: { lower: 0, upper: 50000 }
+    };
+    this.filtrarViajes();
+  }
+
+  filtrarViajes() {
+    this.viajesFiltrados = this.viajes.filter(viaje => {
+      let asientosDisponibles = viaje.asientos - (viaje.pasajeros ? viaje.pasajeros.length : 0);
+      let destino = viaje.destino.direccion.split(', ')[1];
+      let destinoNormalizado = destino.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      let filtroDestinoNormalizado = this.valoresFiltro.destino.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      let filtroDestino = this.valoresFiltro.destino === '' || destinoNormalizado.includes(filtroDestinoNormalizado);
+      let filtroAsientos = this.valoresFiltro.cantAsientos <= asientosDisponibles;
+      let filtroPrecio = viaje.precio >= this.valoresFiltro.rangoPrecio.lower && viaje.precio <= this.valoresFiltro.rangoPrecio.upper;
+      return filtroDestino && filtroAsientos && filtroPrecio;
+    });
   }
 
   solitcitarViaje(viaje: Viaje) {
@@ -101,6 +141,8 @@ export class ViajesPage implements OnInit {
         viaje.conductor = ((await this.authSvc.getDocument(`usuarios/${viaje.conductor}`)) as Usuario).name;
       }
       this.viajes = viajesFiltrados;
+      this.filtrarViajes();
+      this.loading = false;
     });
   }
 }
