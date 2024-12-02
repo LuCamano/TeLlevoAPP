@@ -17,6 +17,9 @@
       <ion-icon name="settings-sharp"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="start">
+      <ion-fab-button *ngIf="viaje.estado !== 'iniciado'" color="warning" (click)="iniciarViaje()">
+        <ion-icon name="play-outline"></ion-icon>
+      </ion-fab-button>
       <ion-fab-button color="danger" (click)="terminarViaje()"><ion-icon name="power-outline"></ion-icon></ion-fab-button>
     </ion-fab-list>
   </ion-fab>

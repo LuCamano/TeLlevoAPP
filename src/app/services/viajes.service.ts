@@ -213,6 +213,16 @@ export class ViajesService {
     return this.authSvc.getCollection(`viajes/${viajeId}/solicitudes`, [{field: 'uidPasajero', opStr: '==', value: userUid}]) as Observable<Solicitud[]>;
   }
 
+  prepararViaje(viaje: Viaje){
+    try {
+      viaje.estado = 'preparándose';
+      return this.actualizarViaje(viaje);
+    } catch (error) {
+      console.error('Error al preparar el viaje:', error);
+      throw error;
+    }
+  }
+
   iniciarViaje(viaje: Viaje){
     try {
       viaje.estado = 'iniciado';

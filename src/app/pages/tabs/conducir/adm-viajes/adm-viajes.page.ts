@@ -166,8 +166,29 @@ export class AdmViajesPage implements OnInit {
   }
 
   iniciarViaje() {
+    let mensaje = this.viaje.estado !== 'preparándose' ? 'Preparar' : 'Iniciar';
     try {
-      this.viajesSvc.iniciarViaje(this.viaje);
+      this.utils.presentAlert({
+        header: `${mensaje} viaje`,
+        message: `¿Está seguro de que desea ${mensaje.toLowerCase()} el viaje?`,
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+          },
+          {
+            text: 'Aceptar',
+            role: 'ok',
+            handler: () => {
+              if (this.viaje.estado !== 'preparándose') {
+                this.viajesSvc.prepararViaje(this.viaje);
+              } else {
+                this.viajesSvc.iniciarViaje(this.viaje);
+              }
+            },
+          },
+        ],
+      });
     } catch (error) {
       this.utils.presentToast({
         color: 'danger',
@@ -204,7 +225,7 @@ export class AdmViajesPage implements OnInit {
   terminarViaje() {
     this.utils.presentAlert({
       header: 'Terminar viaje',
-      message: '¿Está seguro de que desea terminar el viaje?',
+      message: `¿Está seguro de que desea ${this.viaje.estado === 'iniciado' ? 'terminar':'cancelar'} el viaje?`,
       buttons: [
         {
           text: 'Cancelar',
