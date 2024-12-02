@@ -69,10 +69,10 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content #mensajesContainer >
+      <ion-content #mensajesContainer>
         <div id="mensajes-container">
           @for (mensaje of mensajes; track $index) {
-            @if (mensaje.remitente === usuario.name) {
+            @if (mensaje.remitenteId === usuario.uid) {
               <!-- Mensaje del usuario -->
               <div class="mensaje-usuario">
                 <ion-label>

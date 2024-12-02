@@ -56,6 +56,7 @@ export class AdmViajesPage implements OnInit {
   }
 
   ngOnInit() {}
+  
   datosLocalesUser() {
     let userLocal: Usuario = this.utils.getFromLocalStorage('user');
     if (userLocal) {
@@ -71,7 +72,7 @@ export class AdmViajesPage implements OnInit {
     this.subMensajes = this.chatSvc.getMensajes(this.viaje.id!).subscribe(
       msgs => {
         this.mensajes = msgs; // Mensajes ordenados por timestamp
-        setTimeout(() => this.mensajesContainer.scrollToBottom(),10); // Desplazamiento automático al fondo   
+        setTimeout(() => this.mensajesContainer.scrollToBottom(),20); // Desplazamiento automático al fondo   
       }
     );
   }
