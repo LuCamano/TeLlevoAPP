@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ViewChild} from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { Mensaje, Solicitud, Viaje } from 'src/app/models/models';
+import { Mensaje, Solicitud, Usuario, Viaje } from 'src/app/models/models';
 import { ChatService } from 'src/app/services/chat.service';
 import { MapboxService } from 'src/app/services/mapbox.service';
 import { UtilsService } from 'src/app/services/utils.service';
@@ -36,7 +36,7 @@ export class AdmViajesPage implements OnInit {
   nuevoMensaje = '';
 
   viaje = {} as Viaje;
-
+  usuario = {} as Usuario;
   private watchPosCallId!: string;
 
   ionViewWillEnter() {
@@ -44,6 +44,7 @@ export class AdmViajesPage implements OnInit {
     this.buildMap();
     this.getSolicitudes();
     this.verMensajes();
+    this.datosLocalesUser();
   }
 
   ionViewWillLeave() {
@@ -53,12 +54,15 @@ export class AdmViajesPage implements OnInit {
   }
 
   ngOnInit() {}
-
+  
+  datosLocalesUser() {
+    this.usuario = this.utils.getFromLocalStorage('user') as Usuario;
+  }
   verMensajes() {
     this.subMensajes = this.chatSvc.getMensajes(this.viaje.id!).subscribe(
       msgs => {
         this.mensajes = msgs; // Mensajes ordenados por timestamp
-        setTimeout(() => this.mensajesContainer.scrollToBottom(),10); // Desplazamiento automático al fondo   
+        setTimeout(() => this.mensajesContainer.scrollToBottom(),20); // Desplazamiento automático al fondo   
       }
     );
   }
