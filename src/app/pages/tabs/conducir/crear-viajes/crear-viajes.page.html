@@ -30,10 +30,10 @@
           <ion-input [(ngModel)]="viaje.patenteAuto" name="patenteAuto" helperText="Ingrese la patente del vehículo" errorText="Formato de patente no válido" type="text" label="Patente del vehículo" placeholder="BBCC12" labelPlacement="floating" fill="outline" pattern="[A-Z]{4}[0-9]{2}" (ionInput)="viaje.patenteAuto = viaje.patenteAuto.toUpperCase()" maxlength="6" required></ion-input>
           <br>
           <!-- Cantidad de asientos -->
-          <ion-input [(ngModel)]="viaje.asientos" name="asientos" helperText="Ingrese cantidad de asientos disponibles" errorText="Cantidad de asientos no válida" type="number" label="Cantidad de asientos" placeholder="3" min="1" labelPlacement="floating" fill="outline" (ionInput)="validarAsientos($event)" required></ion-input>
+          <ion-input [(ngModel)]="viaje.asientos" name="asientos" helperText="Ingrese cantidad de asientos disponibles" errorText="Cantidad de asientos no válida (min 1, max 35)" type="number" label="Cantidad de asientos" placeholder="3" min="1" max="35" labelPlacement="floating" fill="outline" (ionInput)="validarAsientos($event)" required></ion-input>
           <br>
           <!-- Precio del viaje -->
-          <ion-input [(ngModel)]="viaje.precio" name="precio" helperText="Ingrese el costo del viaje" errorText="Precio no válido" type="number" inputmode="numeric" label="Precio" placeholder="1.500" step="1" min="0" labelPlacement="floating" fill="outline" (ionInput)="validarPrecio($event)" required></ion-input>
+          <ion-input [(ngModel)]="viaje.precio" name="precio" helperText="Ingrese el costo del viaje (max $50.000)" errorText="Precio no válido" type="number" inputmode="numeric" label="Precio" placeholder="1.500" step="1" min="0" max="50000" labelPlacement="floating" fill="outline" (ionInput)="validarPrecio($event)" required></ion-input>
           <br>
           <ion-button type="submit" expand="block" [disabled]="nuevoViajeForm.invalid || !origenSelected || !destinoSelected">
             Crear

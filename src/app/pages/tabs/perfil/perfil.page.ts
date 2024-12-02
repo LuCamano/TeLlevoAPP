@@ -92,8 +92,10 @@ export class PerfilPage implements OnInit {
         method: 'HEAD',
         mode: 'no-cors',
       });
+      console.log('Internet is available');
       return true;
     } catch (error) {
+      console.error('Internet is not available');
       return false;
     }
   }

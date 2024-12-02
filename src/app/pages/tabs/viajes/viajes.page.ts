@@ -1,26 +1,57 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { DatePipe } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { Usuario, Viaje } from 'src/app/models/models';
+import { AuthService } from 'src/app/services/auth.service';
+import { UtilsService } from 'src/app/services/utils.service';
+import { ViajesService } from 'src/app/services/viajes.service';
 @Component({
   selector: 'app-viajes',
   templateUrl: './viajes.page.html',
   styleUrls: ['./viajes.page.scss'],
 })
 export class ViajesPage implements OnInit {
+  // Inyectar servicios
+  private utils = inject(UtilsService);
+  private menuCtrl = inject(MenuController);
+  private viajesSvc = inject(ViajesService);
+  private authSvc = inject(AuthService);
+  private datePipe = inject(DatePipe);
   
-  viajes = [
-    { id: 1, hora: '16:00', conductor: 'Leandro', destino: 'Chiguayante', precio: 1000, asientosDisponibles: 3 },
-    { id: 2, hora: '17:00', conductor: 'Matías', destino: 'Concepción', precio: 800, asientosDisponibles: 4 },
-    { id: 3, hora: '18:00', conductor: 'José', destino: 'Talcahuano', precio: 1200, asientosDisponibles: 2 },
-    { id: 4, hora: '19:00', conductor: 'Sebastian', destino: 'Hualpén', precio: 1500, asientosDisponibles: 1 },
-    { id: 5, hora: '20:00', conductor: 'Nicolás', destino: 'San Pedro de la Paz', precio: 2000, asientosDisponibles: 5 }
-  ];
+  viajes: Viaje[] = [];
 
-  constructor(private alertController: AlertController,private menuCtrl: MenuController) { }
+  loading = true;
+
+  viajesFiltrados: Viaje[] = [];
+
+  valoresFiltro = {
+    destino: '',
+    cantAsientos: 1,
+    rangoPrecio: { lower: 0, upper: 50000 }
+  }
+
+  private subViajes!: Subscription;
 
   ngOnInit() {
   }
   
+  ionViewWillEnter() {
+    this.obtenerViajes();
+  }
+
+  ionViewWillLeave() {
+    this.subViajes.unsubscribe();
+  }
+
+  actualizarRangoPrecio() {
+    this.valoresFiltro.rangoPrecio = {
+      lower: this.valoresFiltro.rangoPrecio.lower,
+      upper: this.valoresFiltro.rangoPrecio.upper
+    };
+    this.filtrarViajes();
+  }
+
   filtrarDato(arr: Array<{ [key: string]: any }>, key: string): any[] {
     let result: any[] = [];
     arr.forEach(element => {
@@ -35,10 +66,34 @@ export class ViajesPage implements OnInit {
     return result;
   }
 
-  solitcitarViaje(viaje: any) {
-    this.alertController.create({
+  limpiarFiltros() {
+    this.valoresFiltro = {
+      destino: '',
+      cantAsientos: 1,
+      rangoPrecio: { lower: 0, upper: 50000 }
+    };
+    this.filtrarViajes();
+  }
+
+  filtrarViajes() {
+    this.viajesFiltrados = this.viajes.filter(viaje => {
+      let asientosDisponibles = viaje.asientos - (viaje.pasajeros ? viaje.pasajeros.length : 0);
+      let destino = viaje.destino.direccion.split(', ')[1];
+      let destinoNormalizado = destino.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      let filtroDestinoNormalizado = this.valoresFiltro.destino.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      let filtroDestino = this.valoresFiltro.destino === '' || destinoNormalizado.includes(filtroDestinoNormalizado);
+      let filtroAsientos = this.valoresFiltro.cantAsientos <= asientosDisponibles;
+      let filtroPrecio = viaje.precio >= this.valoresFiltro.rangoPrecio.lower && viaje.precio <= this.valoresFiltro.rangoPrecio.upper;
+      return filtroDestino && filtroAsientos && filtroPrecio;
+    });
+  }
+
+  solitcitarViaje(viaje: Viaje) {
+    const hora = this.datePipe.transform(viaje.fecha, 'HH:mm a');
+    const destino = viaje.destino.direccion.split(', ')[1];
+    this.utils.presentAlert({
       header: 'Solicitar viaje',
-      message: `¿Estás seguro que deseas solicitar el viaje de las ${viaje.hora} con destino a ${viaje.destino}?`,
+      message: `¿Estás seguro que deseas solicitar el viaje de las ${hora} con destino a ${destino}?`,
       buttons: [
         {
           text: 'Cancelar',
@@ -47,21 +102,47 @@ export class ViajesPage implements OnInit {
         {
           text: 'Aceptar',
           role: 'ok',
-          handler: () => {
-            this.alertController.create({
-              header: 'Solicitud enviada',
-              message: `Tu solicitud para el viaje de las ${viaje.hora} con destino a ${viaje.destino} ha sido enviada con éxito.`,
-              buttons: ['Aceptar']
-            }).then(alert => {
-              alert.present();
-            })
-          }
+          handler: () => {this.unirseAlViaje(viaje)}
         }
       ]
-    }).then(alert => alert.present());
+    });
+  }
+
+  async unirseAlViaje(viaje: Viaje) {
+    try {
+      return await this.viajesSvc.unirseAlViaje(viaje);
+    } catch (error) {
+      this.utils.presentToast({
+        message: 'Error' + error,
+        color: 'danger',
+        duration: 2000
+      });
+    }
   }
 
   mostrarFiltro() {
     this.menuCtrl.open('viajes-menu');
+  }
+
+  obtenerViajes() {
+    const uid = this.utils.getFromLocalStorage('user').uid;
+    this.subViajes = this.viajesSvc.getViajes([
+      { field: 'conductor', opStr: '!=', value: uid },
+      { field: 'estado', opStr: '==', value: 'disponible' }
+    ]).subscribe( async vjs => {
+      let viajesFiltrados = vjs.filter( vj => {
+        if (vj.pasajeros) {
+          return vj.pasajeros.indexOf(uid) === -1;
+        } else {
+          return true;
+        }
+      });
+      for (const viaje of viajesFiltrados) {
+        viaje.conductor = ((await this.authSvc.getDocument(`usuarios/${viaje.conductor}`)) as Usuario).name;
+      }
+      this.viajes = viajesFiltrados;
+      this.filtrarViajes();
+      this.loading = false;
+    });
   }
 }

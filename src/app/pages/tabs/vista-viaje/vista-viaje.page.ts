@@ -47,6 +47,7 @@ export class VistaViajePage implements OnInit {
 
   ionViewWillLeave() {
     if (this.watchPosCallId) this.utils.clearWatch(this.watchPosCallId);
+    if (this.subMensajes) this.subMensajes.unsubscribe();
   }
 
   async buildMap() {
