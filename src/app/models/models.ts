@@ -31,5 +31,6 @@ export interface Mensaje {
     id?: string;
     mensaje: string;
     remitente: string;
+    remitenteId: string;
     timestamp?: number;
 }

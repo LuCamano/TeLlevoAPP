@@ -19,6 +19,7 @@ export class ChatService {
       nuevoMsg.timestamp = Date.now(); // Añadir marca de tiempo
       nuevoMsg.mensaje = mensaje;
       nuevoMsg.remitente = usrLocal.name;
+      nuevoMsg.remitenteId = usrLocal.uid;
       return await this.authService.addDocument(
         `viajes/${idViaje}/mensajes`,
         nuevoMsg
