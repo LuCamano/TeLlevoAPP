@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.lucamano_paulsalinas.tellevoapp;
 
 import com.getcapacitor.BridgeActivity;
 

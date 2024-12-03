@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.tellevoapp.app',
+  appId: 'com.lucamano_paulsalinas.tellevoapp',
   appName: 'TeLlevoAPP',
   webDir: 'www'
 };
