@@ -4,6 +4,7 @@ import { Solicitud, Usuario, Viaje } from '../models/models';
 import { combineLatest, map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
+import { FcmService } from './fcm.service';
 
 
 @Injectable({
@@ -13,6 +14,7 @@ export class ViajesService {
   // Inyecciones de dependencias
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
+  private fcm = inject(FcmService);
 
   private viajeEnCurso: Viaje | undefined;
 
@@ -106,6 +108,8 @@ export class ViajesService {
   }
 
   async solicitarUnirseAlViaje(viaje: Viaje) {
+
+
     if (!viaje.id) throw new Error('No se ha especificado el viaje');
     try {
       // Crear la solicitud
@@ -115,7 +119,25 @@ export class ViajesService {
         pasajero: `${name} ${lastName}`,
         estado: 'PENDIENTE'
       };
-      return await this.authSvc.addDocument(`viajes/${viaje.id}/solicitudes`, solicitud);
+      const respSoli = await this.authSvc.addDocument(`viajes/${viaje.id}/solicitudes`, solicitud);
+      // Enviar notificación al conductor
+      this.fcm.obtenerTokensConductor(viaje.id).then( tokens => {
+        if (tokens) {
+          this.fcm.sendPushNotification({
+            tokens: tokens,
+            notification: {
+              title: 'Nueva solicitud',
+              body: `Tienes una nueva solicitud de ${solicitud.pasajero} para unirse a tu viaje`
+            },
+            data: {
+              type: 'solicitud',
+              viajeId: viaje.id!,
+              solicitudId: respSoli.id
+            }
+          }).then( resp => console.log('Notificación enviada:', resp));
+        }
+      })
+      return respSoli;
     } catch (error) {
       console.error('Error al solicitar unirse al viaje:', error);
       throw error;

@@ -7,8 +7,6 @@ import { Usuario } from '../models/models';
 import { UtilsService } from './utils.service';
 import { ICollectionOpts } from '../interfaces/varios';
 import { PushNotifications } from '@capacitor/push-notifications';
-import { FcmService } from './fcm.service';
-import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'

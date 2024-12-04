@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { INotification } from '../interfaces/varios';
 import { lastValueFrom } from 'rxjs';
-import { Usuario } from '../models/models';
+import { Usuario, Viaje } from '../models/models';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +49,7 @@ export class FcmService {
       'Content-Type': 'application/json'
     });
 
-    return await lastValueFrom(this.http.post('https://notifstellevoapp.glitch.me/sendPushNotification', JSON.stringify(notif), { headers: headers }));
+    return await lastValueFrom(this.http.post('https://notifstellevoapp-462e3c35423d.herokuapp.com/sendPushNotification', JSON.stringify(notif), { headers: headers }));
 
   }
 
@@ -86,10 +86,46 @@ export class FcmService {
         usr.tokens = usr.tokens ? usr.tokens : [];
         usr.tokens = usr.tokens.filter( t => t !== token);
         await this.authSvc.setDocument(`usuarios/${usr.uid}`, usr);
-        this.utils.saveInLocalStorage('user', usr);
       }
     } catch (error) {
       console.error('Error al eliminar el token:', error);
+      throw error;
+    }
+  }
+
+  async obtenerTokensUsuario(uid: string) {
+    try {
+      const usr = await this.authSvc.getDocument(`usuarios/${uid}`) as Usuario;
+      return usr.tokens;
+    } catch (error) {
+      console.error('Error al obtener los tokens del usuario:', error);
+      throw error;
+    }
+  }
+
+  async obtenerTokensPasajeros(viaje: Viaje) {
+    try {
+      const tokens: string[] = [];
+      for (const pasajero of viaje.pasajeros) {
+        const pasajeroTokens = await this.obtenerTokensUsuario(pasajero);
+        if (pasajeroTokens) {
+          tokens.push(...pasajeroTokens);
+        }
+      }
+      return tokens;
+    } catch (error) {
+      console.error('Error al obtener los tokens de los pasajeros:', error);
+      throw error;
+    }
+  }
+
+  async obtenerTokensConductor(viajeId: string) {
+    try {
+      const viaje = await this.authSvc.getDocument(`viajes/${viajeId}`) as Viaje;
+      const conductorTokens = await this.obtenerTokensUsuario(viaje.conductor);
+      return conductorTokens;
+    } catch (error) {
+      console.error('Error al obtener los tokens del conductor:', error);
       throw error;
     }
   }
