@@ -2,10 +2,13 @@ import { inject, Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, EmailAuthProvider } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getDoc, setDoc, doc, addDoc, collection, collectionData, query, where, WhereFilterOp } from "@angular/fire/firestore";
+import { getDoc, setDoc, doc, addDoc, collection, collectionData, query, where } from "@angular/fire/firestore";
 import { Usuario } from '../models/models';
 import { UtilsService } from './utils.service';
 import { ICollectionOpts } from '../interfaces/varios';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { FcmService } from './fcm.service';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -33,8 +36,10 @@ export class AuthService {
     return this.ngFireAuth.sendPasswordResetEmail(email);
   }
 
-  signOut(){
-    this.ngFireAuth.signOut();
+  async signOut(){
+    await this.ngFireAuth.signOut();
+    PushNotifications.removeAllListeners();
+    PushNotifications.unregister();
     localStorage.clear();
     this.utils.navigateRoot('/login');
   }

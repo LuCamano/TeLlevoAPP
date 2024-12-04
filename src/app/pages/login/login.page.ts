@@ -2,6 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { UtilsService } from '../../services/utils.service';
 import { AuthService } from '../../services/auth.service';
+import { FcmService } from 'src/app/services/fcm.service';
+import { Platform } from '@ionic/angular';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -11,6 +13,8 @@ export class LoginPage implements OnInit {
   // Inyección de dependencias
   private utils = inject(UtilsService);
   private authSvc = inject(AuthService);
+  private fcmSvc = inject(FcmService);
+  private platform = inject(Platform);
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -26,6 +30,9 @@ export class LoginPage implements OnInit {
     try {
       const user = await this.authSvc.signIn(email!, password!);
       if (user) {
+        if (this.platform.is('capacitor')){
+          this.fcmSvc.initFcm();
+        }
         this.utils.navigateRoot('/tabs');
       }
     } catch (error) {
