@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { INotification } from '../interfaces/varios';
 import { lastValueFrom } from 'rxjs';
-import { Usuario, Viaje } from '../models/models';
+import { Mensaje, Usuario, Viaje } from '../models/models';
 
 @Injectable({
   providedIn: 'root'
@@ -215,7 +215,7 @@ export class FcmService {
     }
   }
 
-  async notificarMensaje(viajeId: string){
+  async notificarMensaje(viajeId: string, mensaje: Mensaje) {
     try {
       let tokens: string[] = [];
       const viaje = await this.authSvc.getDocument(`viajes/${viajeId}`) as Viaje;
@@ -227,8 +227,8 @@ export class FcmService {
       this.sendPushNotification({
         tokens,
         notification: {
-          title: 'Nuevo mensaje',
-          body: 'Tienes un nuevo mensaje en el chat del viaje'
+          title: 'Nuevo mensaje en tu viaje',
+          body: `${mensaje.remitente}: ${mensaje.mensaje.length > 50 ? mensaje.mensaje.slice(0, 50) + '...' : mensaje.mensaje}`
         },
         data: {
           route: '/tabs/home',

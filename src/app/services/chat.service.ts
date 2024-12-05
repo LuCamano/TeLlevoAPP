@@ -23,7 +23,7 @@ export class ChatService {
       nuevoMsg.remitente = usrLocal.name;
       nuevoMsg.remitenteId = usrLocal.uid;
       let mesRes = await this.authService.addDocument(`viajes/${idViaje}/mensajes`, nuevoMsg);
-      this.fcm.notificarMensaje(idViaje);
+      this.fcm.notificarMensaje(idViaje, nuevoMsg);
       return mesRes;
     } catch (error) {
       console.error('Error al crear el mensaje:', error);
