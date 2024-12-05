@@ -39,9 +39,12 @@
       </ion-header>
       <ion-content class="ion-padding">
         <ion-card *ngFor="let solicitud of solicitudes">
-          <ion-card-content>
-            <ion-text color="tertiary">
+          <ion-card-content class="ion-padding-vertical">
+            <ion-label color="tertiary" class="ion-margin-bottom">
               <h5>{{solicitud.pasajero}}</h5>
+            </ion-label>
+            <ion-text *ngIf="solicitud.estado !== 'PENDIENTE'">
+              <p>Solicitud {{solicitud.estado}}</p>
             </ion-text>
             <ion-buttons slot="bottom">
               <ion-button *ngIf="solicitud.estado === 'PENDIENTE'" color="success" fill="solid" expand="block" (click)="aceptarSolicitud(solicitud)">
@@ -51,6 +54,13 @@
                 Rechazar
               </ion-button>
             </ion-buttons>
+          </ion-card-content>
+        </ion-card>
+        <ion-card *ngIf="solicitudes.length <= 0">
+          <ion-card-content>
+            <ion-text color="tertiary">
+              <h5>No hay solicitudes</h5>
+            </ion-text>
           </ion-card-content>
         </ion-card>
       </ion-content>
