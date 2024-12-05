@@ -4,6 +4,7 @@ import { Solicitud, Usuario, Viaje } from '../models/models';
 import { combineLatest, map, Observable } from 'rxjs';
 import { IViajesOpts } from '../interfaces/varios';
 import { UtilsService } from './utils.service';
+import { FcmService } from './fcm.service';
 
 
 @Injectable({
@@ -13,6 +14,7 @@ export class ViajesService {
   // Inyecciones de dependencias
   private authSvc = inject(AuthService);
   private utils = inject(UtilsService);
+  private fcm = inject(FcmService);
 
   private viajeEnCurso: Viaje | undefined;
 
@@ -106,6 +108,8 @@ export class ViajesService {
   }
 
   async solicitarUnirseAlViaje(viaje: Viaje) {
+
+
     if (!viaje.id) throw new Error('No se ha especificado el viaje');
     try {
       // Crear la solicitud
@@ -115,7 +119,10 @@ export class ViajesService {
         pasajero: `${name} ${lastName}`,
         estado: 'PENDIENTE'
       };
-      return await this.authSvc.addDocument(`viajes/${viaje.id}/solicitudes`, solicitud);
+      const respSoli = await this.authSvc.addDocument(`viajes/${viaje.id}/solicitudes`, solicitud);
+      // Enviar notificación al conductor
+      this.fcm.notificarSolicitud(viaje.id);
+      return respSoli;
     } catch (error) {
       console.error('Error al solicitar unirse al viaje:', error);
       throw error;
@@ -132,7 +139,9 @@ export class ViajesService {
       }
       solicitud.estado = 'ACEPTADA';
       await this.actualizarViaje(viaje);
-      return await this.actualizarSolicitud(solicitud, viaje.id!);
+      await this.actualizarSolicitud(solicitud, viaje.id!);
+      // Enviar notificación al pasajero
+      this.fcm.notificarAceptacion(uid);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
       throw error;
@@ -142,7 +151,9 @@ export class ViajesService {
   async rechazarSolicitud(solicitud: Solicitud, viaje: Viaje){
     try {
       solicitud.estado = 'RECHAZADA';
-      return await this.actualizarSolicitud(solicitud, viaje.id!);
+      await this.actualizarSolicitud(solicitud, viaje.id!);
+      // Enviar notificación al pasajero
+      this.fcm.notificarRechazo(solicitud.uidPasajero);
     } catch (error) {
       console.error('Error al rechazar la solicitud:', error);
       throw error;

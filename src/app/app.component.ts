@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertButton } from '@ionic/angular';
+import { AlertButton, Platform } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
 import { UtilsService } from './services/utils.service';
 import { Usuario } from './models/models';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { FcmService } from './services/fcm.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -28,7 +29,13 @@ export class AppComponent {
     }
   ]
 
-  constructor(private router: Router, private authSvc: AuthService, private utils: UtilsService) {
+  constructor(
+    private router: Router, 
+    private authSvc: AuthService, 
+    private utils: UtilsService,
+    private fcmSvc: FcmService,
+    private platform: Platform
+  ) {
     this.initilizeApp();
     router.events.subscribe(val => {
       this.isValidUser = !this.router.url.includes('/login');
@@ -47,6 +54,9 @@ export class AppComponent {
   }
   
   logout() {
+    if (this.platform.is('capacitor')) {
+      this.fcmSvc.removeToken();
+    }
     this.authSvc.signOut();
   }
 

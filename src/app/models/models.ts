@@ -5,6 +5,7 @@ export interface Usuario {
     name: string;
     lastName: string;
     uid: string;
+    tokens?: string[];
 }
 export interface Viaje {
     id?: string;

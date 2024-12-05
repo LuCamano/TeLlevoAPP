@@ -57,3 +57,12 @@ export interface IDestino {
   coordinates: [lng: number, lat: number];
   direccion: string;
 }
+
+export interface INotification {
+  notification: {
+    title: string;
+    body: string;
+  }
+  tokens: string[];
+  data?: { [key: string]: string };
+}

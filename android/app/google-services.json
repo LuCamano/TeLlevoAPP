@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002431398345",
+    "project_id": "tellevoapp-35977",
+    "storage_bucket": "tellevoapp-35977.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002431398345:android:a6827ec71d416da89b6818",
+        "android_client_info": {
+          "package_name": "com.lucamano_paulsalinas.tellevoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDy7ok4CY2CvjunHMPK3LEMZYnYonrZAlc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
