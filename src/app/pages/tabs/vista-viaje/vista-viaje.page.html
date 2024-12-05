@@ -1,4 +1,4 @@
-<app-encabezado titulo="Viaje" defaultHref="/" [shouldGoBack]="true"></app-encabezado>
+<app-encabezado titulo="Viaje a {{destino}}" defaultHref="/" [shouldGoBack]="true"></app-encabezado>
 
 <ion-content>
     <!-- Mapa -->
@@ -7,7 +7,7 @@
     </div>
     <!-- Modal para los mensajes -->
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="mensajesModal=true">
+        <ion-fab-button color="tertiary" (click)="mensajesModal=true">
             <ion-icon name="chatbox-ellipses-outline"></ion-icon>
         </ion-fab-button>
     </ion-fab>
