@@ -24,6 +24,9 @@ export class AdmViajesPage implements OnInit {
   map!: mapboxgl.Map;
   currentMarker!: mapboxgl.Marker;
 
+  // Contadores
+  contSolisPend = 0;
+
   solicitudesModal = false;
   mensajesModal = false;
 
