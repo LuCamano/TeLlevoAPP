@@ -2,21 +2,18 @@
 
 <ion-content>
   <!-- Botones para las solicitudes y mensajes -->
-  <ion-fab vertical="top" horizontal="end" slot="fixed">
-    <ion-fab-button>
-      <ion-icon name="caret-back-circle-outline"></ion-icon>
-    </ion-fab-button>
-    <ion-fab-list side="start">
-      <ion-fab-button (click)="solicitudesModal = true"><ion-icon name="clipboard-outline"></ion-icon></ion-fab-button>
-      <ion-fab-button (click)="mensajesModal = true"><ion-icon name="chatbox-ellipses-outline"></ion-icon></ion-fab-button>
-    </ion-fab-list>
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="solicitudesModal = true"><ion-icon name="clipboard-outline"></ion-icon></ion-fab-button>
+  </ion-fab>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="tertiary" (click)="mensajesModal = true"><ion-icon name="chatbox-ellipses-outline"></ion-icon></ion-fab-button>
   </ion-fab>
   <!-- Botón para terminar el viaje -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab vertical="top" horizontal="start" slot="fixed">
     <ion-fab-button>
       <ion-icon name="settings-sharp"></ion-icon>
     </ion-fab-button>
-    <ion-fab-list side="start">
+    <ion-fab-list side="end">
       <ion-fab-button *ngIf="viaje.estado !== 'iniciado'" color="warning" (click)="iniciarViaje()">
         <ion-icon name="play-outline"></ion-icon>
       </ion-fab-button>
