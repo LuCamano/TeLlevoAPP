@@ -39,7 +39,9 @@ export class FcmService {
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
-      this.utils.presentAlert({header: 'Push action performed', message: JSON.stringify(notification)});
+      if (notification.notification.data.route) {
+        this.utils.navigateForwardto(notification.notification.data.route);
+      }
     });
   }
 
@@ -77,7 +79,7 @@ export class FcmService {
 
   async removeToken() {
     try {
-      const token = this.utils.getFromLocalStorage('fcm-token');
+      const token: string = this.utils.getFromLocalStorage('fcm-token');
   
       // Eliminar el token de la base de datos
       const { uid } = this.utils.getFromLocalStorage('user') as Usuario;
@@ -126,6 +128,114 @@ export class FcmService {
       return conductorTokens;
     } catch (error) {
       console.error('Error al obtener los tokens del conductor:', error);
+      throw error;
+    }
+  }
+
+  async notificarSolicitud(viajeId: string) {
+    try {
+      const tokens = await this.obtenerTokensConductor(viajeId);
+      if (!tokens) throw new Error('No hay tokens para notificar');
+      this.sendPushNotification({
+        tokens,
+        notification: {
+          title: 'Nueva solicitud',
+          body: 'Tienes una nueva solicitud de un pasajero'
+        },
+        data: {
+          route: '/conducir/adm-viajes'
+        }
+      });
+    } catch (error) {
+      console.error('Error al notificar la solicitud:', error);
+      throw error;
+    }
+  }
+
+  async notificarAceptacion(pasajeroId: string) {
+    try {
+      const tokens = await this.obtenerTokensUsuario(pasajeroId);
+      if (!tokens) throw new Error('No hay tokens para notificar');
+      this.sendPushNotification({
+        tokens,
+        notification: {
+          title: 'Solicitud aceptada',
+          body: 'Tu solicitud ha sido aceptada'
+        },
+        data: {
+          route: '/vista-viaje',
+          solicitudStatus: 'ACEPTADA'
+        }
+      });
+    } catch (error) {
+      console.error('Error al notificar la aceptación:', error);
+      throw error;
+    }
+  }
+
+  async notificarRechazo(pasajeroId: string) {
+    try {
+      const tokens = await this.obtenerTokensUsuario(pasajeroId);
+      if (!tokens) throw new Error('No hay tokens para notificar');
+      this.sendPushNotification({
+        tokens,
+        notification: {
+          title: 'Solicitud rechazada',
+          body: 'Tu solicitud ha sido rechazada'
+        },
+        data: {
+          route: '/tabs/home',
+          solicitudStatus: 'RECHAZADA'
+        }
+      });
+    } catch (error) {
+      console.error('Error al notificar el rechazo:', error);
+      throw error;
+    }
+  }
+
+  async notificarPreparacion(viajeId: string) {
+    try {
+      const viaje = await this.authSvc.getDocument(`viajes/${viajeId}`) as Viaje;
+      const tokens = await this.obtenerTokensPasajeros(viaje);
+      if (!tokens) throw new Error('No hay tokens para notificar');
+      this.sendPushNotification({
+        tokens,
+        notification: {
+          title: 'Viaje en preparación',
+          body: 'Tu viaje está en preparación'
+        },
+        data: {
+          route: '/vista-viaje',
+        }
+      });
+    } catch (error) {
+      console.error('Error al notificar la preparación:', error);
+      throw error;
+    }
+  }
+
+  async notificarMensaje(viajeId: string){
+    try {
+      let tokens: string[] = [];
+      const viaje = await this.authSvc.getDocument(`viajes/${viajeId}`) as Viaje;
+      const tokensPasajeros = await this.obtenerTokensPasajeros(viaje);
+      const tokensConductor = await this.obtenerTokensConductor(viajeId);
+      if (tokensPasajeros) tokens.push(...tokensPasajeros);
+      if (tokensConductor) tokens.push(...tokensConductor);
+      if (tokens.length <= 0) throw new Error('No hay tokens para notificar');
+      this.sendPushNotification({
+        tokens,
+        notification: {
+          title: 'Nuevo mensaje',
+          body: 'Tienes un nuevo mensaje en el chat del viaje'
+        },
+        data: {
+          route: '/tabs/home',
+        }
+      });
+    } catch (error) {
+      console.error('Error al notificar el mensaje:', error);
       throw error;
     }
   }

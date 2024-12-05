@@ -121,22 +121,7 @@ export class ViajesService {
       };
       const respSoli = await this.authSvc.addDocument(`viajes/${viaje.id}/solicitudes`, solicitud);
       // Enviar notificación al conductor
-      this.fcm.obtenerTokensConductor(viaje.id).then( tokens => {
-        if (tokens) {
-          this.fcm.sendPushNotification({
-            tokens: tokens,
-            notification: {
-              title: 'Nueva solicitud',
-              body: `Tienes una nueva solicitud de ${solicitud.pasajero} para unirse a tu viaje`
-            },
-            data: {
-              type: 'solicitud',
-              viajeId: viaje.id!,
-              solicitudId: respSoli.id
-            }
-          }).then( resp => console.log('Notificación enviada:', resp));
-        }
-      })
+      this.fcm.notificarSolicitud(viaje.id);
       return respSoli;
     } catch (error) {
       console.error('Error al solicitar unirse al viaje:', error);
@@ -154,7 +139,9 @@ export class ViajesService {
       }
       solicitud.estado = 'ACEPTADA';
       await this.actualizarViaje(viaje);
-      return await this.actualizarSolicitud(solicitud, viaje.id!);
+      await this.actualizarSolicitud(solicitud, viaje.id!);
+      // Enviar notificación al pasajero
+      this.fcm.notificarAceptacion(uid);
     } catch (error) {
       console.error('Error al aceptar la solicitud:', error);
       throw error;
@@ -164,7 +151,9 @@ export class ViajesService {
   async rechazarSolicitud(solicitud: Solicitud, viaje: Viaje){
     try {
       solicitud.estado = 'RECHAZADA';
-      return await this.actualizarSolicitud(solicitud, viaje.id!);
+      await this.actualizarSolicitud(solicitud, viaje.id!);
+      // Enviar notificación al pasajero
+      this.fcm.notificarRechazo(solicitud.uidPasajero);
     } catch (error) {
       console.error('Error al rechazar la solicitud:', error);
       throw error;
