@@ -59,7 +59,14 @@
     <app-encabezado titulo="viajes"></app-encabezado>
     <!-- Contenido de la pagina -->
     <ion-content class="ion-padding">
-      
+      <!-- Aviso de viaje disponible -->
+      <ion-item *ngIf="viajeEnCurso.status" lines="none" color="tertiary" class="viaje-en-curso ion-margin-vertical">
+        <ion-label slot="start">Tienes un viaje en curso</ion-label>
+        <ion-button slot="end" color="success"
+          routerDirection="forward" [routerLink]="viajeEnCurso.esConductor ? '/conducir/adm-viajes' : '/vista-viaje'">
+          Ir al viaje
+        </ion-button>
+      </ion-item>
       <ion-row>
         <ion-title>Viajes encontrados:</ion-title>
         <ion-button fill="clear" (click)="mostrarFiltro()" class="ion-hide-md-up">Filtro</ion-button>

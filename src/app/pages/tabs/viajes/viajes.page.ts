@@ -25,12 +25,15 @@ export class ViajesPage implements OnInit {
 
   viajesFiltrados: Viaje[] = [];
 
+  viajeEnCurso: { status: boolean, viaje?: Viaje, esConductor?: boolean } = { status: false };
+
   valoresFiltro = {
     destino: '',
     cantAsientos: 1,
     rangoPrecio: { lower: 0, upper: 50000 }
   }
 
+  private viajeEnCursoSub!: Subscription;
   private subViajes!: Subscription;
 
   ngOnInit() {
@@ -38,10 +41,12 @@ export class ViajesPage implements OnInit {
   
   ionViewWillEnter() {
     this.obtenerViajes();
+    this.obtenerViajeEnCurso();
   }
 
   ionViewWillLeave() {
-    this.subViajes.unsubscribe();
+    if (this.subViajes) this.subViajes.unsubscribe();
+    if (this.viajeEnCursoSub) this.viajeEnCursoSub.unsubscribe();
   }
 
   actualizarRangoPrecio() {
@@ -144,5 +149,15 @@ export class ViajesPage implements OnInit {
       this.filtrarViajes();
       this.loading = false;
     });
+  }
+
+  obtenerViajeEnCurso() {
+    const {uid} = this.utils.getFromLocalStorage('user') as Usuario;
+    this.viajeEnCursoSub = this.viajesSvc.revisarSiHayViajeEnCurso(uid).subscribe(
+      resp => {
+        this.viajeEnCurso = resp;
+        this.viajesSvc.setViajeEnCurso(resp.viaje);
+      }
+    );
   }
 }

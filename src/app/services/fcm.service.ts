@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { INotification } from '../interfaces/varios';
 import { lastValueFrom } from 'rxjs';
 import { Mensaje, Usuario, Viaje } from '../models/models';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class FcmService {
   private utils = inject(UtilsService);
   private http = inject(HttpClient);
   private authSvc = inject(AuthService);
+  private router = inject(Router);
 
   initFcm() {
 
@@ -31,16 +33,21 @@ export class FcmService {
     });
 
     PushNotifications.addListener('registrationError', (error: any) => {
-      this.utils.presentAlert({header: 'Push registration error', message: JSON.stringify(error)});
+      console.error('Error al registrar el token:', error);
     });
 
     PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-      this.utils.presentAlert({header: 'Push received', message: JSON.stringify(notification)});
+      this.utils.presentToast({
+        message: notification.title,
+        duration: 2000,
+        position: 'top',
+        swipeGesture: 'vertical',
+      });
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
       if (notification.notification.data.route) {
-        this.utils.navigateForwardto(notification.notification.data.route);
+        this.router.navigateByUrl(notification.notification.data.route);
       }
     });
   }
@@ -232,6 +239,7 @@ export class FcmService {
         },
         data: {
           route: '/tabs/home',
+          mensaje: JSON.stringify(mensaje)
         }
       });
     } catch (error) {

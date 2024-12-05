@@ -32,6 +32,8 @@ export class VistaViajePage implements OnInit {
 
   nuevoMensaje = '';
 
+  destino = '';
+
   viaje = {} as Viaje;
   usuario = {} as Usuario;
   private watchPosCallId!: string;
@@ -101,6 +103,7 @@ export class VistaViajePage implements OnInit {
       if (!this.viaje) {
         throw new Error('No hay un viaje en curso');
       }
+      this.destino = this.viaje.destino.direccion.split(', ')[1];
     } catch (error) {
       this.utils.presentToast({
         color: 'danger',
