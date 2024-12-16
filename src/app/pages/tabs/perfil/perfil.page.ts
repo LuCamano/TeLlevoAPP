@@ -47,7 +47,7 @@ export class PerfilPage implements OnInit {
   }
 
   async obtenerViajes() {
-    if (await this.checkInternet()) {
+    if (await this.utils.checkInternet()) {
       this.viajesSub = this.getViajesUser()
         .pipe(
           switchMap((viajes) =>
@@ -84,19 +84,5 @@ export class PerfilPage implements OnInit {
       { field: 'pasajeros', opStr: 'array-contains', value: uid },
       { field: 'estado', opStr: 'in', value: ['iniciado', 'finalizado'] },
     ]);
-  }
-
-  async checkInternet(): Promise<boolean> {
-    try {
-      const response = await fetch('https://example.com/ping', {
-        method: 'HEAD',
-        mode: 'no-cors',
-      });
-      console.log('Internet is available');
-      return true;
-    } catch (error) {
-      console.error('Internet is not available');
-      return false;
-    }
   }
 }

@@ -99,7 +99,7 @@ export class VistaViajePage implements OnInit {
 
   async obtenerViaje() {
     try {
-      this.viaje = this.viajesSvc.getViajeEnCurso!;
+      this.viaje = this.viajesSvc.getViajeEnCurso();
       if (!this.viaje) {
         throw new Error('No hay un viaje en curso');
       }

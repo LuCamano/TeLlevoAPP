@@ -76,4 +76,18 @@ export class UtilsService {
   clearWatch(id: string){
     return Geolocation.clearWatch({id});
   }
+
+  async checkInternet(): Promise<boolean> {
+    try {
+      const response = await fetch('https://example.com/ping', {
+        method: 'HEAD',
+        mode: 'no-cors',
+      });
+      console.log('Internet is available');
+      return true;
+    } catch (error) {
+      console.error('Internet is not available');
+      return false;
+    }
+  }
 }

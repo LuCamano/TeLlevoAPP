@@ -65,9 +65,13 @@ export class ConducirPage implements OnInit {
   obtenerViajeEnCurso() {
     const uid = this.utils.getFromLocalStorage('user').uid;
     this.viajeEnCursoSub = this.viajesSvc.revisarSiHayViajeEnCurso(uid).subscribe(
-      resp => {
-        this.viajeEnCurso = resp;
-        this.viajesSvc.setViajeEnCurso(resp.viaje);
+      async resp => {
+        if (await this.utils.checkInternet()) {
+          this.viajeEnCurso = resp;
+          this.viajesSvc.setViajeEnCurso(resp);
+        } else {
+          this.viajeEnCurso = this.utils.getFromLocalStorage('viajeEnCurso');
+        }
       }
     );
   }

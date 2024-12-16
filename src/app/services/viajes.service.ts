@@ -16,8 +16,6 @@ export class ViajesService {
   private utils = inject(UtilsService);
   private fcm = inject(FcmService);
 
-  private viajeEnCurso: Viaje | undefined;
-
   async crearViaje(viaje: Viaje){
     try {
       // Crear la tabla en la base de datos
@@ -212,12 +210,14 @@ export class ViajesService {
     );
   }
 
-  setViajeEnCurso(viaje: Viaje | undefined) {
-    this.viajeEnCurso = viaje;
+  setViajeEnCurso(viajeEnCurso: any) {
+    if (viajeEnCurso !== undefined) {
+      this.utils.saveInLocalStorage('viajeEnCurso', viajeEnCurso);
+    }
   }
 
-  get getViajeEnCurso() {
-    return this.viajeEnCurso;
+  getViajeEnCurso() {
+    return this.utils.getFromLocalStorage('viajeEnCurso').viaje;
   }
 
   getSolicitudes(viajeId: string, userUid?: string) {

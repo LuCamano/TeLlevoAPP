@@ -1,72 +1,76 @@
 <app-encabezado titulo="Viaje a {{destino}}" defaultHref="/" [shouldGoBack]="true"></app-encabezado>
 
 <ion-content>
-    <!-- Mapa -->
-    <div id="map-container">
-        <div class="map" id="mapa" tabindex="0"></div>
-    </div>
-    <!-- Modal para los mensajes -->
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button color="tertiary" (click)="mensajesModal=true">
-            <ion-icon name="chatbox-ellipses-outline"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
-    <!-- Modal para los mensajes -->
-    <ion-modal [isOpen]="mensajesModal" (willDismiss)="mensajesModal = false">
-        <ng-template>
-        <ion-header>
-            <ion-toolbar color="secondary">
-            <ion-title>Mensajes</ion-title>
-            <ion-buttons slot="end">
-                <ion-button (click)="mensajesModal = false">
-                Cerrar
-                </ion-button>
-            </ion-buttons>
-            </ion-toolbar>
-        </ion-header>
-        <ion-content #mensajesContainer >
-          <div id="mensajes-container" >
-            @for (mensaje of mensajes; track $index) {
-              @if (mensaje.remitenteId === usuario.uid) {
-                <!-- Mensaje del usuario -->
-                <div class="mensaje-usuario">
-                  <ion-label>
-                    <strong>{{mensaje.remitente}}</strong>
-                    <br/>
-                    <ion-note>
-                      {{ mensaje.mensaje }}
-                    </ion-note>
-                  </ion-label>
-                </div>
-              }
-              @else {
-                <div class="mensaje-recibido">
-                  <ion-label>
-                    <strong>{{mensaje.remitente}}</strong>
-                    <br />
-                    <ion-note>
-                      {{ mensaje.mensaje }}
-                    </ion-note>
-                  </ion-label>
-                </div>
-              }
+  <!-- Mensaje de no conexión -->
+  <ion-text *ngIf="!map" class="ion-text-center">
+    <h1>No hay conexión</h1>
+  </ion-text>
+  <!-- Mapa -->
+  <div id="map-container">
+      <div class="map" id="mapa" tabindex="0"></div>
+  </div>
+  <!-- Modal para los mensajes -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button color="tertiary" (click)="mensajesModal=true">
+          <ion-icon name="chatbox-ellipses-outline"></ion-icon>
+      </ion-fab-button>
+  </ion-fab>
+  <!-- Modal para los mensajes -->
+  <ion-modal [isOpen]="mensajesModal" (willDismiss)="mensajesModal = false">
+      <ng-template>
+      <ion-header>
+          <ion-toolbar color="secondary">
+          <ion-title>Mensajes</ion-title>
+          <ion-buttons slot="end">
+              <ion-button (click)="mensajesModal = false">
+              Cerrar
+              </ion-button>
+          </ion-buttons>
+          </ion-toolbar>
+      </ion-header>
+      <ion-content #mensajesContainer >
+        <div id="mensajes-container" >
+          @for (mensaje of mensajes; track $index) {
+            @if (mensaje.remitenteId === usuario.uid) {
+              <!-- Mensaje del usuario -->
+              <div class="mensaje-usuario">
+                <ion-label>
+                  <strong>{{mensaje.remitente}}</strong>
+                  <br/>
+                  <ion-note>
+                    {{ mensaje.mensaje }}
+                  </ion-note>
+                </ion-label>
+              </div>
             }
-          </div>
-            
-        </ion-content>
-        <ion-footer class="ion-padding">
-            <form #mensajeForm="ngForm" (ngSubmit)="enviarMensaje()">
-            <ion-item lines="none">
-                <ion-input type="text" placeholder="Escribir mensaje..." fill="outline" name="nuevoMensaje" [(ngModel)]="nuevoMensaje"></ion-input>
-                <ion-buttons slot="end">
-                <ion-button type="submit" shape="round" color="tertiary" expand="block" fill="solid">
-    
-                    <ion-icon slot="start" name="paper-plane-outline"></ion-icon>
-                </ion-button>
-                </ion-buttons>
-            </ion-item>
-            </form>
-        </ion-footer>
-        </ng-template>
-    </ion-modal>
+            @else {
+              <div class="mensaje-recibido">
+                <ion-label>
+                  <strong>{{mensaje.remitente}}</strong>
+                  <br />
+                  <ion-note>
+                    {{ mensaje.mensaje }}
+                  </ion-note>
+                </ion-label>
+              </div>
+            }
+          }
+        </div>
+          
+      </ion-content>
+      <ion-footer class="ion-padding">
+          <form #mensajeForm="ngForm" (ngSubmit)="enviarMensaje()">
+          <ion-item lines="none">
+              <ion-input type="text" placeholder="Escribir mensaje..." fill="outline" name="nuevoMensaje" [(ngModel)]="nuevoMensaje"></ion-input>
+              <ion-buttons slot="end">
+              <ion-button type="submit" shape="round" color="tertiary" expand="block" fill="solid">
+  
+                  <ion-icon slot="start" name="paper-plane-outline"></ion-icon>
+              </ion-button>
+              </ion-buttons>
+          </ion-item>
+          </form>
+      </ion-footer>
+      </ng-template>
+  </ion-modal>
 </ion-content>

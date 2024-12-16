@@ -38,10 +38,12 @@ export class FcmService {
 
     PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
       this.utils.presentToast({
-        message: notification.title,
-        duration: 2000,
+        header: notification.title,
+        message: notification.body!.length > 50  ? notification.body?.slice(0, 50) + '...' : notification.body,
+        duration: 4000,
         position: 'top',
         swipeGesture: 'vertical',
+        color: 'primary'
       });
     });
 

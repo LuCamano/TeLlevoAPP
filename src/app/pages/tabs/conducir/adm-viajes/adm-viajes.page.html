@@ -20,6 +20,10 @@
       <ion-fab-button color="danger" (click)="terminarViaje()"><ion-icon name="power-outline"></ion-icon></ion-fab-button>
     </ion-fab-list>
   </ion-fab>
+  <!-- Mensaje de no conexión -->
+  <ion-text *ngIf="!map" class="ion-text-center">
+    <h1>No hay conexión</h1>
+  </ion-text>
   <!-- Mapa -->
   <div id="map-container">
     <div class="map" id="mapa" tabindex="0"></div>
